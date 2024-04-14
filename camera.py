@@ -10,57 +10,23 @@ from ai_trainer.drawing import draw_pose, draw_text
 from ai_trainer.feedback.front_squat import give_feedback
 
 def main():
-    """Analyse a video and give feedback on the person's front squat technique.
-
-    Args:
-        video_path (str): path to the input video file.
-    """
-
     blazepose_model = BlazePoseModel(model_path="./models/blazepose_full.onnx")
-
-    # Read video:
     cap = cv2.VideoCapture(0)
-    # if cap.isOpened() is False:
-    #     print("Error reading the video file")
     while cap.isOpened():
-
-        ret, frame = cap.read()
-        # result_screen = np.zeros((250, 400, 3), np.uint8)
-
-        frame = cv2.resize(frame, (800, 480), interpolation=cv2.INTER_AREA)
-        # recolor frame to RGB
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-
+        _, frame = cap.read()
+        # frame = cv2.resize(frame, (800, 480), interpolation=cv2.INTER_AREA)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # Get video configuration
         # nbr_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         # frame_size = int(cap.get(3)), int(cap.get(4))  # frame_w, frame_h
         # img_w, img_h = frame_size
         fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-        # Create video writer
-        # Get video codec
-        # if video_path[-4:] == ".mp4" or video_path[-4:] == ".MOV":
-        #     fourcc = cv2.VideoWriter_fourcc(*"MP4V")
-        # elif video_path[-4:] == ".avi":
-        #     fourcc = cv2.VideoWriter_fourcc(*"XVID")
-
-        # output = cv2.VideoWriter(save_video_path,
-        #                         fourcc,
-        #                         fps, frame_size)
-
-        # Iterate through frames
-        # print("💪 Evaluating your front squat technique...")
-        # for i in tqdm(range(int(nbr_frames))):
-        # Read the video file
-        __, frame = cap.read()
-
-        # Check we have frames:
         if frame is None:
             break
-        copy_frame = frame.copy()
+        # copy_frame = frame.copy()
         kps = blazepose_model.predict([
-            cv2.cvtColor(copy_frame, cv2.COLOR_BGR2RGB)
+            cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             ])[0]  # batch size is 1
 
         probs = kps.T[3]
@@ -85,8 +51,8 @@ def main():
             x, y, z = kps.T[:3]
 
             pose_3d = np.column_stack((x, y, z))
-            copy_frame = draw_pose(
-                image=copy_frame,
+            frame = draw_pose(
+                image=frame,
                 keypoints=pose_3d,
                 disposition="mediapipe", # blazepose keypoints are in mediapipe format
                 thickness=2,
@@ -99,7 +65,7 @@ def main():
                 y_text_pos+=25
                 if correction in list(feedback.keys()):
                     copy_frame = draw_text(
-                        image=copy_frame,
+                        image=frame,
                         text=feedback[correction],
                         origin=(10, y_text_pos),
                         font_scale=0.8,
