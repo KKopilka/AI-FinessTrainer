@@ -11,6 +11,7 @@ from typing import Tuple, Dict, List
 import math
 import numpy as np
 from sklearn.metrics import euclidean_distances as dist
+from ai_trainer.properties import *
 
 def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
     """Calculate the anle between the vertical and the humerus.
@@ -94,6 +95,67 @@ def get_bending_angle(hip: np.ndarray, knee: np.ndarray, ankle: np.ndarray)->flo
 
     return angle_degrees
 
+def find_angle(p1, p2, ref_pt = np.array([0,0,0])):
+    p1_ref = p1 - ref_pt
+    p2_ref = p2 - ref_pt
+
+    cos_theta = (np.dot(p1_ref,p2_ref)) / (1.0 * np.linalg.norm(p1_ref) * np.linalg.norm(p2_ref))
+    theta = np.arccos(np.clip(cos_theta, -1.0, 1.0))
+            
+    degree = int(180 / np.pi) * theta
+
+    return int(degree)
+
+def get_angle(kps: np.ndarray)->float:
+    """Check if knees are bending of if the legs are straight.
+
+    Args:
+        kps (np.ndarray): denormalized 3d pose keypoints.
+
+    Returns:
+        bool: True if knees are bending. False if legs are straight. Knees are considered
+            to be bending if the bending angle is bigger than 50 degrees. The bending angle
+            is the angle between the femur and the tibia, in degrees.
+    """
+    right_hip = kps[23]
+    right_knee = kps[25]
+    # right_ankle = kps[27]
+
+    left_hip = kps[24]
+    left_knee = kps[26]
+    # left_ankle = kps[28]
+    knee_vertical_angle_right = find_angle(right_hip, np.array([right_knee[0], 0, 0]), right_knee)
+    knee_vertical_angle_left = find_angle(left_hip, np.array([left_knee[0], 0, 0]), left_knee)
+    print(knee_vertical_angle_right, knee_vertical_angle_left)
+    
+    avg_angle = (knee_vertical_angle_left + knee_vertical_angle_right) / 2
+    avg_angle = np.interp(avg_angle, (40, 65), (0, 100))
+    return avg_angle
+
+def are_knees_bending(kps: np.ndarray)->bool:
+    """Check if knees are bending of if the legs are straight.
+
+    Args:
+        kps (np.ndarray): denormalized 3d pose keypoints.
+
+    Returns:
+        bool: True if knees are bending. False if legs are straight. Knees are considered
+            to be bending if the bending angle is bigger than 50 degrees. The bending angle
+            is the angle between the femur and the tibia, in degrees.
+    """
+    right_hip = kps[23]
+    right_knee = kps[25]
+    right_ankle = kps[27]
+
+    left_hip = kps[24]
+    left_knee = kps[26]
+    left_ankle = kps[28]
+
+    right_leg_angle = get_bending_angle(right_hip, right_knee, right_ankle)
+    left_leg_angle = get_bending_angle(left_hip, left_knee, left_ankle)
+    avg_angle = (left_leg_angle + right_leg_angle) / 2
+
+    return avg_angle > 50
 def are_knees_bending(kps: np.ndarray)->bool:
     """Check if knees are bending of if the legs are straight.
 
@@ -194,7 +256,7 @@ def are_feet_well_positioned(kps: np.ndarray)->bool:
     margin = 0.8 * shoulders_width
     return shoulders_width - margin < ankles_width < shoulders_width + margin
 
-def give_feedback(kps: np.ndarray)->Tuple[Dict, List]:
+def give_feedback(kps: np.ndarray, count: int, dirr: int) -> Tuple[Dict, List, int, int]:
     """Give feedback on the person's front squat technique.
     
     The feedback is given in the form of a dictionary with the following keys:
@@ -209,21 +271,36 @@ def give_feedback(kps: np.ndarray)->Tuple[Dict, List]:
 
     Args:
         kps (np.ndarray): denormalized 3d pose keypoints.
+        count (int): current count of completed squats.
+        dirr (int): direction flag for squat completion.
 
     Returns:
         feedback (Dict): feedback on the person's front squat technique.
         possible_corrections (List): possible corrections to the person's front squat technique.
+        count (int): updated count of completed squats.
+        dirr (int): updated direction flag for squat completion.
     """
     feedback = {'is_in_position': False}
     possible_corrections = ['knee_bend', 'feet_position', 'elbow_position', 'knee_position']
-
+   
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         if not are_feet_well_positioned(kps):
             feedback['feet_position'] = "Feet should be at shoulder width!!!"
+            
         if are_elbows_down(kps):
             feedback['elbow_position'] = "Rise your elbows!!!"
+          
         if are_knees_bending(kps):
+            # Получаем угол сгибания коленей
+            angle_bend = get_angle(kps)
+            print("angle: ", angle_bend)
+            # Обновляем счетчик приседаний
+            count, dirr = utilities().calculate_counter(angle_bend, count, dirr)
+            print("count: ", count)
             if are_knees_caving(kps):
                 feedback["knee_position"] = "Open your knees!!!"
-    return (feedback, possible_corrections)
+                
+                
+    return (feedback, possible_corrections, count, dirr)
+

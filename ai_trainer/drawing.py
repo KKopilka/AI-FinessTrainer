@@ -497,3 +497,9 @@ def draw_pose(
         thickness=thickness,
         keypoint_radius=thickness // 2,
     )
+
+def draw_dotted_line(frame, lm_coord, start, end, line_color):
+    pix_step = 0
+
+    for i in range(start, end+1, 8):
+        cv2.circle(frame, (lm_coord[0], i+pix_step), 2, line_color, -1, lineType=cv2.LINE_AA)   

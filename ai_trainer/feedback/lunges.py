@@ -1,15 +1,7 @@
-"""This script gives you feedback on your Lunges technique.
-
-It includes fucntions to check three things:
-    - Are your feet at shoulder width?
-    - Are your elbows up?
-    - Are your knees strong or caving inwards?
-    
-And gives you feedback on how to correct them if needed.
-"""
 from typing import Tuple, Dict, List
 import math
 import numpy as np
+from ai_trainer.drawing import draw_dotted_line
 import cv2
 from sklearn.metrics import euclidean_distances as dist
 
@@ -114,7 +106,11 @@ def position_back(kps: np.ndarray) -> bool:
 
     hip_vertical_angle_right = find_angle_back(right_shoulder, np.array([right_hip[0], 0, 0]), right_hip)
     hip_vertical_angle_left = find_angle_back(left_shoulder, np.array([left_hip[0], 0, 0]), left_hip)
-
+    
+    
+    
+    
+    
     print("l", hip_vertical_angle_left, "r", hip_vertical_angle_right)
     if (50 > hip_vertical_angle_right > 20) and \
          (50 > hip_vertical_angle_left > 20): 
@@ -122,6 +118,26 @@ def position_back(kps: np.ndarray) -> bool:
     else:
         return False
 
+def is_lunge_start_position(kps: np.ndarray) -> bool:
+    """Check if the person is in the start position of the lunge exercise.
+
+    Args:
+        kps (np.ndarray): denormalized 3d pose keypoints.
+
+    Returns:
+        bool: True if one of the legs is stepped back, not too far, and the back is slightly leaned forward.
+              False otherwise.
+    """
+    right_hip = kps[23]
+    left_hip = kps[24]
+
+    # Check if one of the legs is stepped back
+    is_one_leg_stepped_back = (right_hip[1] < 0.95) or (left_hip[1] < 0.95)
+
+    # Check if the back is slightly leaned forward
+    is_back_leaned_forward = position_back(kps)
+
+    return is_one_leg_stepped_back and is_back_leaned_forward
 
 def give_feedback(kps: np.ndarray)->Tuple[Dict, List]:
     """Give feedback on the person's front squat technique.

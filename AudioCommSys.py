@@ -21,8 +21,9 @@ def speech_to_text():
 
 def text_to_speech(text):
     output = gTTS(text=text, lang=language, slow=False)
-    output.save("output.mp3")
-    playsound("output.mp3")
+    output.save(f"audio/output-{text}.mp3")
+    playsound(f"audio/output-{text}.mp3")
+    
 
 def main():  
     text_to_speech("testing")

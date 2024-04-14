@@ -2,6 +2,7 @@
 from . import utils
 from . import models
 from . import drawing
+from . import properties
 # from . import plotting
 from . import feedback
 from .constants import (
