@@ -8,7 +8,7 @@ from ai_trainer.drawing import *
 model = YOLO('models/yolo/best.pt')  # Загрузка модели
 
 # Read an image using OpenCV
-video_path = 'assets/left_side_cut.mp4'
+video_path = 'assets/right_side_cut.mp4'
 cap = cv2.VideoCapture(video_path)
 count = 0
 dirr = 1
@@ -30,16 +30,18 @@ while cap.isOpened():
         annotated_frame = results[0].plot()
 
         feedback, possible_corrections, count = give_feedback(pose_3d, count)
+        offset = 0
         for correction in possible_corrections:
                 if correction in list(feedback.keys()):
                     annotated_frame = draw_text(
                         image=annotated_frame,
                         text=feedback[correction],
-                        origin=(10, 100),
+                        origin=(10, 100+offset*30),
                         font_scale=0.8,
                         color=(50, 50, 250),
                         thickness=2,
                     )
+                    offset += 1
                     print(possible_corrections)
         cv2.putText(annotated_frame, f'Count: {count}', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
  

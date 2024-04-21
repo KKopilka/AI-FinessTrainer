@@ -113,7 +113,7 @@ def find_angle2(p1, p2, p3, draw = True):
         #     angle += 360
         # print("1: ", angle)
         return angle
-        
+
 def estimate_pose_angle(a, b, c):
     """
     Calculate the pose angle for object.
@@ -136,20 +136,17 @@ def estimate_pose_angle(a, b, c):
 
 
 def find_angle(p1, p2, ref_pt = np.array([0,0,0])):
+    print("p1: ", p1)
+    print("p2: ", p2)
     p1_ref = p1 - ref_pt
     p2_ref = p2 - ref_pt
 
-    cosine_angle = np.dot(p1_ref, p2_ref) / (np.linalg.norm(p1_ref) * np.linalg.norm(p2_ref))
-    angle = np.arccos(cosine_angle)
-    
-    return np.degrees(angle)
-
-    # cos_theta = (np.dot(p1_ref,p2_ref)) / (1.0 * np.linalg.norm(p1_ref) * np.linalg.norm(p2_ref))
-    # theta = np.arccos(np.clip(cos_theta, -1.0, 1.0))
+    cos_theta = (np.dot(p1_ref,p2_ref)) / (1.0 * np.linalg.norm(p1_ref) * np.linalg.norm(p2_ref))
+    theta = np.arccos(np.clip(cos_theta, -1.0, 1.0))
             
-    # degree = int(180 / np.pi) * theta
-    # # print(degree)
-    # return int(degree)
+    degree = int(180 / np.pi) * theta
+
+    return int(degree)
 
 def get_angle(kps: np.ndarray)->float:
     """Check if knees are bending of if the legs are straight.
@@ -181,7 +178,7 @@ def get_angle(kps: np.ndarray)->float:
     return avg_angle
 
 
-def are_knees_bending(kps: np.ndarray)->float:
+def are_knees_bending(kps: np.ndarray)->bool:
     """Check if knees are bending of if the legs are straight.
 
     Args:
@@ -202,12 +199,14 @@ def are_knees_bending(kps: np.ndarray)->float:
 
     # right_leg_angle = get_bending_angle(right_hip, right_knee, right_ankle)
     # left_leg_angle = get_bending_angle(left_hip, left_knee, left_ankle)
-    right_leg_angle = estimate_pose_angle(right_hip, right_knee, right_ankle)
-    left_leg_angle = estimate_pose_angle(left_hip, left_knee, left_ankle)
+    # right_leg_angle = estimate_pose_angle(right_hip, right_knee, right_ankle)
+    # left_leg_angle = estimate_pose_angle(left_hip, left_knee, left_ankle)
+    right_leg_angle = find_angle(right_hip, np.array([right_knee[0], 0, 0]), right_knee)
+    left_leg_angle = find_angle(left_hip,  np.array([left_knee[0], 0, 0]), left_knee)
     print(right_leg_angle, left_leg_angle)
     avg_angle = (left_leg_angle + right_leg_angle) / 2
     print("avg_angle: ", avg_angle)
-    return avg_angle
+    return avg_angle > 50
 
 def are_knees_caving(kps: np.ndarray)->bool:
     """Check if knees are caving inwards.
@@ -230,7 +229,7 @@ def are_knees_caving(kps: np.ndarray)->bool:
     #ankles_width = dist([kps[11]], [kps[12]])[0][0]
     knees_width = dist([right_knee], [left_knee])[0][0]
     print(ankles_width, knees_width)
-    margin = 0.2 * ankles_width
+    margin = 0.15 * ankles_width
     print("margin: ", margin)
     return knees_width < ankles_width - margin
 
@@ -282,7 +281,7 @@ def are_feet_well_positioned(kps: np.ndarray)->bool:
 
     ankles_width = dist([right_ankle], [left_ankle])[0][0]
     shoulders_width = dist([right_shoulder], [left_shoulder])[0][0]
-    margin = 0.8 * shoulders_width
+    margin = 0.7 * shoulders_width
     return shoulders_width - margin < ankles_width < shoulders_width + margin
     
 def is_in_right_direction(kps: np.ndarray)->bool:
