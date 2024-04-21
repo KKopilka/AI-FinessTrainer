@@ -3,6 +3,7 @@ from ultralytics import YOLO
 import numpy as np
 from ai_trainer.feedback.front_squat import give_feedback
 from ai_trainer.drawing import *
+from ai_trainer.properties import *
 
 # Load a pretrained YOLOv8n model
 model = YOLO('models/yolo/best.pt')  # Загрузка модели
@@ -12,8 +13,11 @@ video_path = 'assets/right_side_cut.mp4'
 cap = cv2.VideoCapture(video_path)
 count = 0
 dirr = 1
+illustrate_exercise("frontalniye-prisedaniya.jpeg")
 # Loop through the video frames
 while cap.isOpened():
+    
+
     # Read a frame from the video
     success, frame = cap.read()
     frame = cv2.resize(frame, (800, 650), interpolation=cv2.INTER_AREA)
@@ -46,7 +50,7 @@ while cap.isOpened():
         cv2.putText(annotated_frame, f'Count: {count}', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
  
         # Display the annotated frame
-        cv2.imshow("YOLOv8 Inference", annotated_frame)
+        cv2.imshow("Video", annotated_frame)
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord("q"):

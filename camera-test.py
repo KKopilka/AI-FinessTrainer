@@ -7,7 +7,6 @@ from ai_trainer.models import BlazePoseModel
 from ai_trainer.drawing import *
 from ai_trainer.feedback.front_squat import give_feedback
 from AudioCommSys import *
-from ai_trainer.properties import *
 
 def main():
     # illustrate_exercise("frontalniye-prisedaniya.jpeg")
