@@ -5,7 +5,7 @@ import os
 from io import BytesIO
 from playsound import playsound
 
-language = 'ru'
+language = 'en'
 
 def speech_to_text():
     recognizer = sr.Recognizer()

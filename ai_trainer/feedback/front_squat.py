@@ -258,6 +258,13 @@ def are_feet_well_positioned(kps: np.ndarray)->bool:
     shoulders_width = dist([right_shoulder], [left_shoulder])[0][0]
     margin = 0.8 * shoulders_width
     return shoulders_width - margin < ankles_width < shoulders_width + margin
+    
+def is_in_right_direction(kps: np.ndarray)->bool:
+    # Cropped Image
+    if waist_x1 > shoulder_x1:
+        return False
+    
+    return True
 
 def give_feedback(kps: np.ndarray, count: int) -> Tuple[Dict, List, int]:
     """Give feedback on the person's front squat technique.

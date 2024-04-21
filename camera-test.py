@@ -4,19 +4,19 @@ import cv2
 import numpy as np
 from ai_trainer.properties import *
 from ai_trainer.models import BlazePoseModel
-from ai_trainer.drawing import draw_pose, draw_text, draw_rectangle
+from ai_trainer.drawing import *
 from ai_trainer.feedback.front_squat import give_feedback
 from AudioCommSys import *
 from ai_trainer.properties import *
 
 def main():
-    illustrate_exercise("frontalniye-prisedaniya.jpeg")
+    # illustrate_exercise("frontalniye-prisedaniya.jpeg")
     # Инициализация модели BlazePose
     blazepose_model = BlazePoseModel(model_path="./models/blazepose_full.onnx")
     
     # Открытие видеопотока с веб-камеры
-    cap = cv2.VideoCapture("assets/left_side_cut.mp4")
-    
+    cap = cv2.VideoCapture("assets/right_side_cut.mp4")
+    # cap = cv2.VideoCapture(1)
     # Инициализация счетчика и направления движения
     count = 0
     dirr = 1
@@ -31,7 +31,7 @@ def main():
             break
         
         # Изменение размера кадра
-        frame = cv2.resize(frame, (800, 700), interpolation=cv2.INTER_AREA)
+        frame = cv2.resize(frame, (800, 650), interpolation=cv2.INTER_AREA)
         
         # Получение ключевых точек с помощью модели BlazePose
         kps = blazepose_model.predict([cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)])[0]
@@ -50,13 +50,24 @@ def main():
                 disposition="mediapipe",
                 thickness=2,
             )
+        
             # frame = draw_rectangle(
             #     image=frame,
-            #     origin=(100, 100),  # Ваша точка origin, например, (100, 100)
+            #     origin=(20, 100),  # Ваша точка origin, например, (100, 100)
             #     width=100,  # Ширина прямоугольника
             #     height=200,  # Высота прямоугольника
             #     color=(0, 255, 0),  # Цвет прямоугольника в формате (R, G, B)
             #     thickness=3,  # Толщина линии прямоугольника
+            # )
+            # frmae = draw_text_with_background(
+            #     image=frame,
+            #     text="111",
+            #     origin=(10, 80),
+            #     text_color=(255, 255, 255),
+            #     background_color=(0, 0, 0),
+            #     font_scale=0.5,
+            #     font_thickness=2,
+            #     font_face=cv2.FONT_HERSHEY_SIMPLEX,
             # )
            
 

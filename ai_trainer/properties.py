@@ -10,6 +10,7 @@ import threading
 #     pass
 
 def illustrate_exercise(example): 
+    list_threads = []
     seconds = 4
     img = cv2.imread(example)
     print(img.shape)
@@ -18,9 +19,12 @@ def illustrate_exercise(example):
         frame_copy = img.copy()
         # speaker_thread = threading.Thread(
         #     target=text_to_speech, args=(str(int(seconds))), kwargs={}
+            
         # )
+        
         # speaker_thread.start()
         # speaker_thread.join()
+        # time.sleep(1)
         cv2.putText(
             frame_copy,
             "Exercise in: " + str(int(seconds)),
