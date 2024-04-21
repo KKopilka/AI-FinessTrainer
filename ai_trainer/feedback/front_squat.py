@@ -30,14 +30,14 @@ def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
         angle_with_vertical_axis(float): angle between the vertical and the humerus expressed
             in degrees.
     """
-    x1, __, z1 = shoulder
-    x2, __, z2 = elbow
+    a = shoulder
+    b = elbow
     # Calculate the angle using the arctangent function
-    angle_radians = math.atan2(x2 - x1, z2 - z1)
+    angle_radians = math.atan2(b[2] - a[2], b[0] - a[0])
     # Convert the angle from radians to degrees
     angle_degrees = math.degrees(angle_radians)
     angle_with_vertical_axis = np.abs(90 - np.abs(angle_degrees))
-
+    print("angle_with_vertical_axis: ", angle_with_vertical_axis)
     return angle_with_vertical_axis
 
 def are_elbows_down(kps: np.ndarray)->bool:
@@ -49,13 +49,15 @@ def are_elbows_down(kps: np.ndarray)->bool:
     Returns:
         bool: True if the angle between the vertical and both humerus is bigger than 45 degrees.
     """
-    right_shoulder = kps[11]
-    right_elbow = kps[13]
-    left_shoulder = kps[12]
-    left_elbow = kps[14]
+    right_shoulder = kps[6]
+    right_elbow = kps[8]
+    left_shoulder = kps[5]
+    left_elbow = kps[7]
 
     angle_right = elbow_inclination(right_shoulder, right_elbow)
     angle_left = elbow_inclination(left_shoulder, left_elbow)
+    print("1", angle_right)
+    print("2", angle_left)
     return (angle_right > 45) and (angle_left > 45)
 
 def get_bending_angle(hip: np.ndarray, knee: np.ndarray, ankle: np.ndarray)->float:
@@ -107,10 +109,31 @@ def find_angle2(p1, p2, p3, draw = True):
         angle = math.degrees(math.atan2(y3 - y2, x3 - x2) -
                              math.atan2(y1 - y2, x1 - x2))
         # print("0: ", angle)
-        if angle < 0:
-            angle += 360
+        # if angle < 0:
+        #     angle += 360
         # print("1: ", angle)
         return angle
+        
+def estimate_pose_angle(a, b, c):
+    """
+    Calculate the pose angle for object.
+
+    Args:
+        a (float) : The value of pose point a
+        b (float): The value of pose point b
+        c (float): The value o pose point c
+
+    Returns:
+        angle (degree): Degree value of angle between three points
+    """
+    a, b, c = np.array(a), np.array(b), np.array(c)
+    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
+    angle = np.abs(radians * 180.0 / np.pi)
+    if angle > 180.0:
+        angle = 360 - angle
+    print("angle: ", angle)
+    return angle
+
 
 def find_angle(p1, p2, ref_pt = np.array([0,0,0])):
     p1_ref = p1 - ref_pt
@@ -139,13 +162,13 @@ def get_angle(kps: np.ndarray)->float:
             to be bending if the bending angle is bigger than 50 degrees. The bending angle
             is the angle between the femur and the tibia, in degrees.
     """
-    right_hip = kps[23]
-    right_knee = kps[25]
-    right_ankle = kps[27]
+    right_hip = kps[12]
+    right_knee = kps[14]
+    right_ankle = kps[16]
 
-    left_hip = kps[24]
-    left_knee = kps[26]
-    left_ankle = kps[28]
+    left_hip = kps[11]
+    left_knee = kps[13]
+    left_ankle = kps[15]
     # angle_r = find_angle2(right_hip, right_knee, right_ankle)
     angle_r = find_angle(right_hip, right_ankle, right_knee)
     # knee_vertical_angle_right = find_angle(right_hip, np.array([right_knee[0], 0, 0]), right_knee)
@@ -169,17 +192,19 @@ def are_knees_bending(kps: np.ndarray)->float:
             to be bending if the bending angle is bigger than 50 degrees. The bending angle
             is the angle between the femur and the tibia, in degrees.
     """
-    right_hip = kps[23]
-    right_knee = kps[25]
-    right_ankle = kps[27]
+    right_hip = kps[12]
+    right_knee = kps[14]
+    right_ankle = kps[16]
 
-    left_hip = kps[24]
-    left_knee = kps[26]
-    left_ankle = kps[28]
+    left_hip = kps[11]
+    left_knee = kps[13]
+    left_ankle = kps[15]
 
-    right_leg_angle = get_bending_angle(right_hip, right_knee, right_ankle)
-    left_leg_angle = get_bending_angle(left_hip, left_knee, left_ankle)
-    # print(right_leg_angle, left_leg_angle)
+    # right_leg_angle = get_bending_angle(right_hip, right_knee, right_ankle)
+    # left_leg_angle = get_bending_angle(left_hip, left_knee, left_ankle)
+    right_leg_angle = estimate_pose_angle(right_hip, right_knee, right_ankle)
+    left_leg_angle = estimate_pose_angle(left_hip, left_knee, left_ankle)
+    print(right_leg_angle, left_leg_angle)
     avg_angle = (left_leg_angle + right_leg_angle) / 2
     print("avg_angle: ", avg_angle)
     return avg_angle
@@ -196,16 +221,17 @@ def are_knees_caving(kps: np.ndarray)->bool:
             is smaller than the distance between the ankles.
     """
     # si las rodillas estan más juntas que los tobillos, están caving
-    right_knee = kps[25]
-    right_ankle = kps[27]
-    left_knee = kps[26]
-    left_ankle = kps[28]
+    right_knee = kps[14]
+    right_ankle = kps[16]
+    left_knee = kps[13]
+    left_ankle = kps[15]
 
     ankles_width = dist([right_ankle], [left_ankle])[0][0]
     #ankles_width = dist([kps[11]], [kps[12]])[0][0]
     knees_width = dist([right_knee], [left_knee])[0][0]
-
-    margin = 0.15 * ankles_width
+    print(ankles_width, knees_width)
+    margin = 0.2 * ankles_width
+    print("margin: ", margin)
     return knees_width < ankles_width - margin
 
 def is_in_start_position(kps: np.ndarray)->bool:
@@ -219,13 +245,13 @@ def is_in_start_position(kps: np.ndarray)->bool:
             the person is in the start position of the front squat. False otherwise.
     """
     # wrists higher than elbows and closer to the sholders than the elbows are
-    right_shoulder = kps[11]
-    right_elbow = kps[13]
-    right_wrist = kps[15]
+    right_shoulder = kps[6]
+    right_elbow = kps[8]
+    right_wrist = kps[10]
 
-    left_shoulder = kps[12]
-    left_elbow = kps[14]
-    left_wrist = kps[16]
+    left_shoulder = kps[5]
+    left_elbow = kps[7]
+    left_wrist = kps[9]
 
     are_wrists_higher_than_elbows = (
         (right_wrist[1] < right_elbow[1]) and (left_wrist[1] < left_elbow[1])
@@ -249,10 +275,10 @@ def are_feet_well_positioned(kps: np.ndarray)->bool:
         bool: True if the person's feet are at shoulder width. False otherwise.
     """
     # feet at approximately shoulder width
-    right_ankle = kps[27]
-    left_ankle = kps[28]
-    right_shoulder = kps[11]
-    left_shoulder = kps[12]
+    right_ankle = kps[16]
+    left_ankle = kps[15]
+    right_shoulder = kps[6]
+    left_shoulder = kps[5]
 
     ankles_width = dist([right_ankle], [left_ankle])[0][0]
     shoulders_width = dist([right_shoulder], [left_shoulder])[0][0]
@@ -302,8 +328,8 @@ def give_feedback(kps: np.ndarray, count: int) -> Tuple[Dict, List, int]:
             feedback['elbow_position'] = "Rise your elbows!!!"
           
         if are_knees_bending(kps):
-            count += 1
-            print(count)
+            # count += 1
+            # print("count", count)
 
             # angle_bend = get_angle(kps)
             # angle_bend = np.interp(angle_r, (20, 60), (0, 100))

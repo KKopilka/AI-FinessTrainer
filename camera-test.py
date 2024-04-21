@@ -35,14 +35,13 @@ def main():
         
         # Получение ключевых точек с помощью модели BlazePose
         kps = blazepose_model.predict([cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)])[0]
-        
         # Проверка, что есть нормализованные ключевые точки
         probs = kps.T[3]
         if not all(probs<0):
             # Получение 3D координат ключевых точек
             x, y, z = kps.T[:3]
             pose_3d = np.column_stack((x, y, z))
-            
+            print(pose_3d)
             # Отрисовка скелета на изображении
             frame = draw_pose(
                 image=frame,
