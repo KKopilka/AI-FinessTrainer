@@ -9,12 +9,9 @@ And gives you feedback on how to correct them if needed.
 """
 from typing import Tuple, Dict, List
 import math
-import cv2
-import cv2.text
 import numpy as np
 from sklearn.metrics import euclidean_distances as dist
-# from ai_trainer.properties import calculate_counter
-from ai_trainer.properties import DirectionCounter
+
 
 def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
     """Calculate the anle between the vertical and the humerus.
@@ -37,7 +34,7 @@ def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
     # Convert the angle from radians to degrees
     angle_degrees = math.degrees(angle_radians)
     angle_with_vertical_axis = np.abs(90 - np.abs(angle_degrees))
-    print("angle_with_vertical_axis: ", angle_with_vertical_axis)
+    # print("angle_with_vertical_axis: ", angle_with_vertical_axis)
     return angle_with_vertical_axis
 
 def are_elbows_down(kps: np.ndarray)->bool:
@@ -56,8 +53,8 @@ def are_elbows_down(kps: np.ndarray)->bool:
 
     angle_right = elbow_inclination(right_shoulder, right_elbow)
     angle_left = elbow_inclination(left_shoulder, left_elbow)
-    print("1", angle_right)
-    print("2", angle_left)
+    # print("1", angle_right)
+    # print("2", angle_left)
     return (angle_right > 45) and (angle_left > 45)
 
 def get_bending_angle(hip: np.ndarray, knee: np.ndarray, ankle: np.ndarray)->float:
@@ -109,8 +106,8 @@ def find_angle2(p1, p2, p3, draw = True):
         angle = math.degrees(math.atan2(y3 - y2, x3 - x2) -
                              math.atan2(y1 - y2, x1 - x2))
         # print("0: ", angle)
-        # if angle < 0:
-        #     angle += 360
+        if angle < 0:
+            angle += 360
         # print("1: ", angle)
         return angle
 
@@ -131,13 +128,13 @@ def estimate_pose_angle(a, b, c):
     angle = np.abs(radians * 180.0 / np.pi)
     if angle > 180.0:
         angle = 360 - angle
-    print("angle: ", angle)
+    # print("angle: ", angle)
     return angle
 
 
 def find_angle(p1, p2, ref_pt = np.array([0,0,0])):
-    print("p1: ", p1)
-    print("p2: ", p2)
+    # print("p1: ", p1)
+    # print("p2: ", p2)
     p1_ref = p1 - ref_pt
     p2_ref = p2 - ref_pt
 
@@ -159,6 +156,7 @@ def get_angle(kps: np.ndarray)->float:
             to be bending if the bending angle is bigger than 50 degrees. The bending angle
             is the angle between the femur and the tibia, in degrees.
     """
+    
     right_hip = kps[12]
     right_knee = kps[14]
     right_ankle = kps[16]
@@ -166,15 +164,17 @@ def get_angle(kps: np.ndarray)->float:
     left_hip = kps[11]
     left_knee = kps[13]
     left_ankle = kps[15]
-    # angle_r = find_angle2(right_hip, right_knee, right_ankle)
-    angle_r = find_angle(right_hip, right_ankle, right_knee)
+    angle_l = estimate_pose_angle(left_hip, left_knee, left_ankle)
+    angle_r = estimate_pose_angle(right_hip, right_knee, right_ankle)
+    # print("1111111111", angle_r)
     # knee_vertical_angle_right = find_angle(right_hip, np.array([right_knee[0], 0, 0]), right_knee)
     # knee_vertical_angle_left = find_angle(left_hip, np.array([left_knee[0], 0, 0]), left_knee)
     # print(knee_vertical_angle_right, knee_vertical_angle_left)
     # print("angle: ", angle_r)
-    # # avg_angle = (knee_vertical_angle_left + knee_vertical_angle_right) / 2
-    avg_angle = np.interp(angle_r, (20, 60), (0, 100))
+    avg_angle = (angle_l + angle_r) / 2
+    # avg_angle = np.interp(angle_r, (20, 60), (0, 100))
     # print("angle2: ", avg_angle)
+    
     return avg_angle
 
 
@@ -203,9 +203,9 @@ def are_knees_bending(kps: np.ndarray)->bool:
     # left_leg_angle = estimate_pose_angle(left_hip, left_knee, left_ankle)
     right_leg_angle = find_angle(right_hip, np.array([right_knee[0], 0, 0]), right_knee)
     left_leg_angle = find_angle(left_hip,  np.array([left_knee[0], 0, 0]), left_knee)
-    print(right_leg_angle, left_leg_angle)
+    # print(right_leg_angle, left_leg_angle)
     avg_angle = (left_leg_angle + right_leg_angle) / 2
-    print("avg_angle: ", avg_angle)
+    # print("avg_angle: ", avg_angle)
     return avg_angle > 50
 
 def are_knees_caving(kps: np.ndarray)->bool:
@@ -228,9 +228,9 @@ def are_knees_caving(kps: np.ndarray)->bool:
     ankles_width = dist([right_ankle], [left_ankle])[0][0]
     #ankles_width = dist([kps[11]], [kps[12]])[0][0]
     knees_width = dist([right_knee], [left_knee])[0][0]
-    print(ankles_width, knees_width)
+    # print(ankles_width, knees_width)
     margin = 0.15 * ankles_width
-    print("margin: ", margin)
+    # print("margin: ", margin)
     return knees_width < ankles_width - margin
 
 def is_in_start_position(kps: np.ndarray)->bool:
@@ -291,7 +291,22 @@ def is_in_right_direction(kps: np.ndarray)->bool:
     
     return True
 
-def give_feedback_front_squat(kps: np.ndarray, count: int) -> Tuple[Dict, List, int]:
+def counts_calculate(kps: np.ndarray, count: int, dirr: int):
+    angle = get_angle(kps)
+    per = np.interp(angle, (85, 160), (0, 100))
+    if per == 100:
+        if dirr == 0:
+            # count += 0.5
+            dirr = 1
+    # полное выполнение упражнения
+    if per == 0:
+        if dirr == 1:
+            count += 1
+            dirr = 0
+
+    return [count, dirr]
+
+def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List]:
     """Give feedback on the person's front squat technique.
     
     The feedback is given in the form of a dictionary with the following keys:
@@ -327,20 +342,10 @@ def give_feedback_front_squat(kps: np.ndarray, count: int) -> Tuple[Dict, List, 
             feedback['elbow_position'] = "Rise your elbows!!!"
           
         if are_knees_bending(kps):
-            # count += 1
-            # print("count", count)
-
-            # angle_bend = get_angle(kps)
-            # angle_bend = np.interp(angle_r, (20, 60), (0, 100))
-            # print("angle: ", angle_bend)
-            # angle_bend = np.interp(angle_bend, (40, 80), (0, 100))
-            # dCounter.count(angle_bend)
-            # count, dirr = calculate_counter(angle_bend, count, dirr)
-            # exercise = dCounter.get()
-            # print(f"angle: {angle_bend}% count: {exercise}")
             if are_knees_caving(kps):
                 feedback["knee_position"] = "Open your knees!!!"
                 
-                
-    return (feedback, possible_corrections, count)
+    
+            
+    return (feedback, possible_corrections)
 
