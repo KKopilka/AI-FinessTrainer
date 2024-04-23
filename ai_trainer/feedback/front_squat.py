@@ -291,7 +291,7 @@ def is_in_right_direction(kps: np.ndarray)->bool:
     
     return True
 
-def give_feedback(kps: np.ndarray, count: int) -> Tuple[Dict, List, int]:
+def give_feedback_front_squat(kps: np.ndarray, count: int) -> Tuple[Dict, List, int]:
     """Give feedback on the person's front squat technique.
     
     The feedback is given in the form of a dictionary with the following keys:

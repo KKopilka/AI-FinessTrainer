@@ -56,9 +56,9 @@ def get_bending_angle(hip: np.ndarray, knee: np.ndarray, ankle: np.ndarray)->flo
     return angle_degrees
 
 def are_lunges_proper_left(kps: np.ndarray) -> bool:
-    left_hip = kps[24]
-    left_knee = kps[26]
-    left_ankle = kps[28]
+    left_hip = kps[11]
+    left_knee = kps[13]
+    left_ankle = kps[15]
     left_foot = kps[32]
 
     left_leg_angle = get_bending_angle(left_hip, left_knee, left_ankle)
@@ -97,20 +97,15 @@ def find_angle_back(p1, p2, ref_pt = np.array([0,0,0])):
     return int(degree)
 
 def position_back(kps: np.ndarray) -> bool:
-    
-    right_shoulder = kps[11]
-    right_hip = kps[23]
+    right_shoulder = kps[6]
+    right_hip = kps[12]
 
-    left_shoulder = kps[12]
-    left_hip = kps[24]
+    left_shoulder = kps[5]
+    left_hip = kps[11]
 
     hip_vertical_angle_right = find_angle_back(right_shoulder, np.array([right_hip[0], 0, 0]), right_hip)
     hip_vertical_angle_left = find_angle_back(left_shoulder, np.array([left_hip[0], 0, 0]), left_hip)
-    
-    
-    
-    
-    
+
     print("l", hip_vertical_angle_left, "r", hip_vertical_angle_right)
     if (50 > hip_vertical_angle_right > 20) and \
          (50 > hip_vertical_angle_left > 20): 
@@ -128,8 +123,8 @@ def is_lunge_start_position(kps: np.ndarray) -> bool:
         bool: True if one of the legs is stepped back, not too far, and the back is slightly leaned forward.
               False otherwise.
     """
-    right_hip = kps[23]
-    left_hip = kps[24]
+    right_hip = kps[12]
+    left_hip = kps[11]
 
     # Check if one of the legs is stepped back
     is_one_leg_stepped_back = (right_hip[1] < 0.95) or (left_hip[1] < 0.95)

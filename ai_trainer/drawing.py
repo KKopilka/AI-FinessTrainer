@@ -497,3 +497,4 @@ def draw_pose(
         thickness=thickness,
         keypoint_radius=thickness // 2,
     )
+
