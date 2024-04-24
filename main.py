@@ -13,7 +13,7 @@ parser.add_argument('exercise', type=str, help='Name of the exercise to analyze'
 args = parser.parse_args()
 
 if args.exercise.lower() == 'front_squat':
-    # illustrate_exercise("frontalniye-prisedaniya.jpeg")
+    illustrate_exercise("assets/frontalniye-prisedaniya.jpeg")
     active_keypoints = [10,8,6,12,11,5,7,9]
     exercise_feedback_func = give_feedback_front_squat
 elif args.exercise.lower() == 'push_up': 
