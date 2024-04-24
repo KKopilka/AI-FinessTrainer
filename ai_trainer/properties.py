@@ -34,7 +34,7 @@ def score_table(img, count):
     text = "Your score: " + str(count)
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 1
-    font_thickness = 3
+    font_thickness = 2
     font_color = (255, 255, 255) 
 
     text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
