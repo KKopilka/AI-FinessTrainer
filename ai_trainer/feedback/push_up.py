@@ -86,7 +86,7 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     
 
     # Define the threshold for straight arms
-    threshold_angle = 170  # in degrees
+    threshold_angle = 160  # in degrees
 
     # Check if angles are greater than threshold (arms are straight)
     are_arms_straight = (right_angle > threshold_angle) and (left_angle > threshold_angle)
@@ -95,7 +95,7 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     wrist_shoulder_distance = np.linalg.norm(right_shoulder - right_wrist) + np.linalg.norm(left_shoulder - left_wrist)
     shoulder_distance = np.linalg.norm(right_shoulder - left_shoulder)
     are_wrists_wider_than_shoulders = wrist_shoulder_distance > 1.05 * shoulder_distance  # assuming 5% wider
-    
+    print(are_arms_straight, are_wrists_wider_than_shoulders)
     return are_arms_straight and are_wrists_wider_than_shoulders
 
 def wrists_wider_than_shoulders(kps: np.ndarray) -> bool:
