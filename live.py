@@ -5,34 +5,58 @@ from aiortc.contrib.media import MediaRecorder
 from exercise_analyzer import ExerciseAnalyzer
 from ai_trainer.properties import *
 
-st.title('Интеллектуальный помощник по фитнесу :rocket:')
 
-mode = st.radio('Select Exercise', [':basketball: Front Squat', ':basketball: Push Up'], index=0)
+st.set_page_config(layout="wide")
+st.header('Интеллектуальный помощник по фитнесу :rocket:', divider='gray')
 
+mode = st.radio('Выберите упражнение', [':basketball: Фронтальные приседания', ':basketball: Отжимания с широкой постановкой рук'], index=None)
 
-# if st.button("Start Exercise"):
-#     if mode == 'Front Squat':
-#         illustrate_exercise("assets/frontalniye-prisedaniya.jpeg")
-#         exercise_name = 'front_squat'
-#         analyzer = ExerciseAnalyzer(exercise_name)
-#     elif mode == 'Push Up':
-#         # You can uncomment this line if you have an image for push-up
-#         # illustrate_exercise("other_exercise_image.jpeg")
-#         exercise_name = 'push_up'
-#         analyzer = ExerciseAnalyzer(exercise_name)
-#     else:
-#         st.error("Invalid exercise name provided.")
-#         st.stop()
+_TEXT_SQUAT = """
+        *Фронтальные приседания* - это упражнение с гантелями или штангой, при котором вы опускаетесь в приседание, удерживая груз перед собой на уровне груди.
+        Оно направлено на развитие силы ног, особенно квадрицепсов, ягодиц и спины. Упражнение также требует хорошей координации и равновесия, что делает его эффективным для функциональной тренировки всего тела.
 
-if mode == ':basketball: Front Squat':
-    if st.button("Exercise technique"):
-        st.session_state.show_image = True
-        st.image("assets/frontalniye-prisedaniya.jpeg", width=500)
-    else:
-        st.session_state.show_image = False
-    # illustrate_exercise("assets/frontalniye-prisedaniya.jpeg")
+        ❗ Для правильного выполнения упражнения следует соблюдать следующие правила:\n
+            1. Ваши ноги должны быть на ширине плеч.\n
+            2. Локти не дожны быть сильно опущены вниз.\n
+            3. Направление коленей во время приседаний должно быть строго по направлению
+               носков.
+    """
+
+_TEXT_PUSH_UP = """
+        *Отжимания с широкой постановкой рук* - это вариант отжиманий, которые отлично подходят для развития силы грудных мышц и укрепления верхней части тела.
+        Это упражнение также способствует улучшению стабильности и контроля над телом. При правильном выполнении оно может быть эффективным инструментом для укрепления мышц и повышения общей физической формы.
+
+        ❗ Для правильного выполнения упражнения следует соблюдать следующие правила:\n
+            1. Ваши руки должны располагаться на ширине больше, чем ширина плеч.\n
+            2. Локти не должны быть направлены сильно в стороны.
+               Старайтесь слегка отвести их назад.\n
+            3. Держите спину прямо.
+    """
+
+def stream_data_squat():
+    for word in _TEXT_SQUAT.split(" "):
+        yield word + " "
+        time.sleep(0.02)
+
+def stream_data_push_up():
+    for word in _TEXT_PUSH_UP.split(" "):
+        yield word + " "
+        time.sleep(0.02)
+
+left_column, right_column = st.columns(2)
+if mode == ':basketball: Фронтальные приседания':
+    with left_column:
+        st.image("assets/frontalniye-prisedaniya.jpeg", width=650)
+    with right_column:
+        st.write_stream(stream_data_squat)
+        
     analyzer = ExerciseAnalyzer('front_squat')
-elif mode == ':basketball: Push Up':
+elif mode == ':basketball: Отжимания с широкой постановкой рук':
+    with left_column:
+        st.image("assets/push_up.jpg", width=650)
+    with right_column:
+        st.write_stream(stream_data_push_up)
+
     analyzer = ExerciseAnalyzer('push_up')
 
 
@@ -50,6 +74,6 @@ ctx = webrtc_streamer(
     video_frame_callback=video_frame_callback,
     # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},  # Add this config
     media_stream_constraints={"video": {"width": {'min':480, 'ideal':480}}, "audio": False},
-    video_html_attrs=VideoHTMLAttributes(autoPlay=True, controls=False, muted=False)
+    video_html_attrs=VideoHTMLAttributes(autoPlay=True, controls=False, muted=False, width=1000)    
     # out_recorder_factory=out_recorder_factory
 )
