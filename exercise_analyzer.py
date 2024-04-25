@@ -124,7 +124,7 @@ class ExerciseAnalyzer:
 
         # while cap.isOpened():
             # success, frame = cap.read()
-        frame = cv2.resize(frame, (800, 650), interpolation=cv2.INTER_AREA)
+        # frame = cv2.resize(frame, (800, 650), interpolation=cv2.INTER_AREA)
 
         # if success:
         results = self.model(frame)
@@ -161,7 +161,7 @@ class ExerciseAnalyzer:
     #     break
         # else:
         #     break
-        return frame
+        return frame, count
         # cap.release()
         # cv2.destroyAllWindows()
 

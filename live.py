@@ -17,7 +17,7 @@ elif mode == 'Push Up':
 
 def video_frame_callback(frame: av.VideoFrame):
     frame = frame.to_ndarray(format="rgb24")  # Decode and get RGB frame
-    frame, _ = analyzer.analyze_video(frame)  # Process frame
+    frame, count = analyzer.analyze_video(frame)  # Process frame
     return av.VideoFrame.from_ndarray(frame, format="rgb24")  # Encode and return BGR frame
 
 # def out_recorder_factory() -> MediaRecorder:
