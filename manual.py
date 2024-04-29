@@ -6,6 +6,7 @@ from ai_trainer.drawing import *
 from ai_trainer.properties import *
 import argparse
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate
+from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate
 
 
 parser = argparse.ArgumentParser(description='Run pose estimation on a video for a specific exercise')
@@ -20,6 +21,10 @@ elif args.exercise.lower() == 'push_up':
     # illustrate_exercise("other_exercise_image.jpeg")
     active_keypoints = [9, 7, 5, 6, 8, 10]
     exercise_feedback_func = give_feedback_push_up 
+elif args.exercise.lower() == 'biceps': 
+    # illustrate_exercise("other_exercise_image.jpeg")
+    active_keypoints = [9, 7, 5, 6, 8, 10]
+    exercise_feedback_func = give_feedback_biceps
 else:
     print("Invalid exercise name provided.")
     exit()
@@ -28,7 +33,7 @@ def main():
 
     model = YOLO('models/yolo2/best.pt')
     # video_path = 'assets/left_side_cut.mp4'
-    video_path = 'assets/push_up1.mp4'
+    video_path = 'assets/biceps.mp4'
     cap = cv2.VideoCapture(video_path)
     count = 0
     dirr = 1

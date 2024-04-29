@@ -3,6 +3,7 @@ from ultralytics import YOLO
 import numpy as np
 from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate
+from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate
 from ai_trainer.drawing import *
 from ai_trainer.properties import *
 import argparse
