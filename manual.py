@@ -23,7 +23,7 @@ elif args.exercise.lower() == 'push_up':
     exercise_feedback_func = give_feedback_push_up 
 elif args.exercise.lower() == 'biceps': 
     # illustrate_exercise("other_exercise_image.jpeg")
-    active_keypoints = [9, 7, 5, 6, 8, 10]
+    active_keypoints = []
     exercise_feedback_func = give_feedback_biceps
 else:
     print("Invalid exercise name provided.")
@@ -34,7 +34,7 @@ def main():
     model = YOLO('models/yolo2/best.pt')
     # video_path = 'assets/left_side_cut.mp4'
     video_path = 'assets/biceps.mp4'
-    cap = cv2.VideoCapture(video_path)
+    cap = cv2.VideoCapture(1)
     count = 0
     dirr = 1
 
