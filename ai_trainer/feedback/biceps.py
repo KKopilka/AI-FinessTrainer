@@ -39,7 +39,7 @@ def get_angle(kps: np.ndarray) -> float:
 
 def counts_calculate(kps: np.ndarray, count: int, dirr: int):
     angle = get_angle(kps)
-    per = np.interp(angle, (28, 160), (0, 100))
+    per = np.interp(angle, (28, 165), (0, 100))
     if per == 100:
         if dirr == 0:
             # count += 0.5

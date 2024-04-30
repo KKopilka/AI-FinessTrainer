@@ -83,12 +83,12 @@ elif mode == ':basketball: Упражнение с гантелями на би�
     with right_column:
         st.write_stream(stream_data_biceps)
 
-    analyzer = ExerciseAnalyzer('push_up')
+    analyzer = ExerciseAnalyzer('biceps')
 
 
 def video_frame_callback(frame: av.VideoFrame):
     frame = frame.to_ndarray(format="rgb24")  # Decode and get RGB frame
-    frame, count = analyzer.analyze_video(frame)  # Process frame
+    frame, count, dirr = analyzer.analyze_video(frame)  # Process frame
     return av.VideoFrame.from_ndarray(frame, format="rgb24")  # Encode and return BGR frame
 
 # def out_recorder_factory() -> MediaRecorder:

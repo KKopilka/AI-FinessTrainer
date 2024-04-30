@@ -17,11 +17,15 @@ class ExerciseAnalyzer:
         elif self.exercise_name == 'push_up':
             self.active_keypoints = [9, 7, 5, 6, 8, 10]
             self.exercise_feedback_func = give_feedback_push_up 
+        elif self.exercise_name == 'biceps':
+            self.active_keypoints = []
+            self.exercise_feedback_func = give_feedback_biceps 
         else:
             raise ValueError("Invalid exercise name provided.")
 
         self.model = YOLO('models/yolo2/best.pt')
-
+        # self.count = 0
+        # self.dirr = 1
     def analyze_video(self, frame):
         # cap = cv2.VideoCapture(frame)
         count = 0
@@ -66,7 +70,7 @@ class ExerciseAnalyzer:
     #     break
         # else:
         #     break
-        return frame, count
+        return frame, count, dirr
         # cap.release()
         # cv2.destroyAllWindows()
 
