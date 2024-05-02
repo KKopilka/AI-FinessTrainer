@@ -24,12 +24,10 @@ class ExerciseAnalyzer:
             raise ValueError("Invalid exercise name provided.")
 
         self.model = YOLO('models/yolo2/best.pt')
-        # self.count = 0
-        # self.dirr = 1
+        self.count = 0
+        self.dirr = 1
     def analyze_video(self, frame):
         # cap = cv2.VideoCapture(frame)
-        count = 0
-        dirr = 1
 
         # while cap.isOpened():
             # success, frame = cap.read()
@@ -60,7 +58,7 @@ class ExerciseAnalyzer:
                     thickness=2,
                 )
                 offset += 1
-        count, dirr = counts_calculate(pose_3d, count, dirr)
+        self.count, self.dirr = counts_calculate(pose_3d, self.count, self.dirr)
         score_table(frame, count)
 
         
@@ -70,7 +68,7 @@ class ExerciseAnalyzer:
     #     break
         # else:
         #     break
-        return frame, count, dirr
+        return frame, self.count, self.dirr
         # cap.release()
         # cv2.destroyAllWindows()
 
