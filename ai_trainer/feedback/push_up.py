@@ -130,5 +130,5 @@ def give_feedback_push_up(kps: np.ndarray) -> Tuple[Dict, List]:
           
         
                 
-                
-    return (feedback, possible_corrections)
+    pointsofinterest = []         
+    return (feedback, possible_corrections, pointsofinterest)

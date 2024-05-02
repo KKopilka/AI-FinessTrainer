@@ -7,14 +7,14 @@ from ai_trainer.properties import *
 import argparse
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate
-
+from ai_trainer.pac import PointAccumulator
 
 parser = argparse.ArgumentParser(description='Run pose estimation on a video for a specific exercise')
 parser.add_argument('exercise', type=str, help='Name of the exercise to analyze')
 args = parser.parse_args()
 
 if args.exercise.lower() == 'front_squat':
-    illustrate_exercise("assets/frontalniye-prisedaniya.jpeg")
+    # illustrate_exercise("assets/frontalniye-prisedaniya.jpeg")
     active_keypoints = [10,8,6,12,11,5,7,9]
     exercise_feedback_func = give_feedback_front_squat
 elif args.exercise.lower() == 'push_up': 
@@ -32,11 +32,13 @@ else:
 def main():
 
     model = YOLO('models/yolo2/best.pt')
-    # video_path = 'assets/left_side_cut.mp4'
-    video_path = 'assets/biceps.mp4'
-    cap = cv2.VideoCapture(1)
+    video_path = 'assets/left_side_cut.mp4'
+    # video_path = 'assets/biceps.mp4'
+    cap = cv2.VideoCapture(video_path)
     count = 0
     dirr = 1
+
+    validFrames = {}
 
     while cap.isOpened():
         success, frame = cap.read()
@@ -57,7 +59,8 @@ def main():
             # y_img = y * img_h
             # pose_2d = np.column_stack((x_img, y_img))
             pose_3d = np.column_stack((x, y, z))
-
+            if pose_3d.size <= 0:
+                continue
             frame = draw_pose(
                 image=frame,
                 keypoints=pose_3d,
@@ -71,7 +74,7 @@ def main():
             #     pt2 = tuple(kps[active_keypoints[i+1][:2]].astype(int))
             #     cv2.line(frame, pt1, pt2, (255, 255, 255), 8)
             #     cv2.circle(frame, pt1, 5, (0, 0, 0), 5)
-            feedback, possible_corrections = exercise_feedback_func(pose_3d)
+            feedback, possible_corrections, pointsofinterest = exercise_feedback_func(pose_3d)
             offset = 0
             for correction in possible_corrections:
                 if correction in list(feedback.keys()):
@@ -86,6 +89,41 @@ def main():
                     offset += 1
             count, dirr = counts_calculate(pose_3d, count, dirr)
             score_table(frame, count)
+            
+            # Разбираем пришедшие точки интереса
+            for poi in pointsofinterest:
+                # получаем координаты кружка
+                coords = poi['coords']
+                # если координаты (0,0), то пропускаем, т.к. отрисовывать нет смысла
+                if coords[0] == 0 and coords[1] == 0:
+                    continue
+                # цвет успешного попадания в зону кружка
+                color = (0,255,0) # зеленый
+                # проверяем содержит ли метка флаг ошибки valid = False
+                if not poi['valid']:
+                    color = (0,0,255) # меняем цвет на красный
+                
+                # По умолчанию метка отрисовывается. Мы проверяем условия, при которых метку нужно скрыть
+                visible = True
+                # Если метка положительная, то мы записываем счетчик фреймов validFrames, в котором подсчитываем
+                # количество фреймов с положительным результатом.
+                # При достижении счетчика порога в 10 положительных фреймов, метка скрывается - visible становится False
+                if poi['valid']:
+                    # если не было счетчика с ключем `id`, то создаем
+                    if poi['id'] not in validFrames:
+                        validFrames[poi['id']] = 0
+                    
+                    validFrames[poi['id']] += 1
+                    if validFrames[poi['id']] > 10:
+                        visible = False
+                else:
+                    # Если метка неудачная, то сбрасываем счётчик
+                    validFrames[poi['id']] = 0
+                
+                # отрисовываем включенные метки
+                if visible:
+                    frame = draw_circle(frame, (int(coords[0]), int(coords[1])), 10, color, 2)
+             
             cv2.imshow("Video", frame)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):

@@ -3,6 +3,10 @@ import math
 import numpy as np
 from sklearn.metrics import euclidean_distances as dist
 
+from ai_trainer.pac import PointAccumulator
+
+left_elbow_accum = PointAccumulator(100, True, False, False)
+right_elbow_accum = PointAccumulator(100, True, False, False)
 
 def estimate_pose_angle(a, b, c) -> float:
     """
@@ -38,6 +42,7 @@ def get_angle(kps: np.ndarray) -> float:
     return avg_angle
 
 def counts_calculate(kps: np.ndarray, count: int, dirr: int):
+    print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
     per = np.interp(angle, (28, 165), (0, 100))
     if per == 100:
@@ -68,25 +73,41 @@ def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbo
     right_elbow = kps[8]
     right_shoulder = kps[6]
     left_shoulder = kps[5]
+
+    acc_left_elbow = left_elbow_accum.val()
+    if not isinstance(acc_left_elbow, (np.ndarray)):
+        acc_left_elbow = [0,0]
+
+    acc_right_elbow = right_elbow_accum.val()
+    if not isinstance(acc_right_elbow, (np.ndarray)):
+        acc_right_elbow = [0,0]
     
      # Проверяем, если значение координаты Y локтя стало меньше начального значения
-    left_elbow_moved_down = left_elbow[1] < initial_left_elbow[1]
-    right_elbow_moved_down = right_elbow[1] < initial_right_elbow[1]
-
-    # Если хотя бы один из локтей двигается вниз, перезаписываем начальные позиции локтей
-    if left_elbow_moved_down or right_elbow_moved_down:
-        initial_left_elbow = left_elbow.copy()
-        initial_right_elbow = right_elbow.copy()
+    left_elbow_moved_down = left_elbow[1] - acc_left_elbow[1] < -5 
+    right_elbow_moved_down = right_elbow[1] - acc_right_elbow[1] < -5 
+    # # Если хотя бы один из локтей двигается вниз, перезаписываем начальные позиции локтей
+    # if left_elbow_moved_down or right_elbow_moved_down:
+    #     initial_left_elbow = left_elbow.copy()
+    #     initial_right_elbow = right_elbow.copy()
 
     # Проверяем, если значение координаты Y локтя стало больше начального значения
-    left_elbow_moved_up = left_elbow[1] > initial_left_elbow[1]
-    right_elbow_moved_up = right_elbow[1] > initial_right_elbow[1]
+    left_elbow_moved_up = left_elbow[1] - acc_left_elbow[1] > 5
+    right_elbow_moved_up = right_elbow[1] - acc_right_elbow[1] > 5
     # print('not: ', not_right)
     print("right_elbow: ", right_elbow)
     print("left_elbow: ", left_elbow)
-    print("initial_right_elbow: ", initial_right_elbow)
-    print("initial_left_elbow: ", initial_left_elbow)
-    return left_elbow_moved_up or right_elbow_moved_up
+    print("initial_right_elbow: ", acc_right_elbow)
+    print("initial_left_elbow: ", acc_left_elbow)
+
+    left_elbow_accum.store(left_elbow)
+    right_elbow_accum.store(right_elbow)
+
+    if left_elbow_moved_up or right_elbow_moved_up:
+        return 1
+    elif left_elbow_moved_down or right_elbow_moved_down:
+        return 2
+    else:
+        return 0
 
 # def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbow) -> bool:
 #     left_elbow = kps[7]
@@ -115,7 +136,6 @@ def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbo
 #     print("Elbow not moving forward")
 #     return False
 
-
 initial_left_elbow = [0, 0, 0]
 initial_right_elbow = [0, 0, 0]
 initial_position_set = False
@@ -140,6 +160,8 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     margin = 0.7 * shoulders_width
     legs_correct = shoulders_width - margin < ankles_width < shoulders_width + margin
 
+    # legs_correct = True
+
     if hands_down and legs_correct and not initial_position_set:
         initial_left_elbow = left_elbow
         initial_right_elbow = right_elbow
@@ -152,18 +174,45 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     return False
 
 
-def give_feedback_biceps(kps: np.ndarray) -> Tuple[Dict, List]:
+def give_feedback_biceps(kps: np.ndarray) -> Tuple[Dict, List, List]:
     feedback = {'is_in_position': False}
     possible_corrections = ['feet_position', 'elbow_position', 'elbow_position_second']
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         if not are_feet_well_positioned(kps):
             feedback['feet_position'] = "Feet should be at shoulder width!!!"
-        if elbow_position_first(kps, initial_left_elbow, initial_right_elbow):
+        elbowPosition = elbow_position_first(kps, initial_left_elbow, initial_right_elbow)
+        if elbowPosition == 1:
+            feedback['elbow_position'] = "Put your elbows up!!!"
+        elif elbowPosition == 2:
             feedback['elbow_position'] = "Put your elbows down!!!"
         
+    acc_left_elbow = left_elbow_accum.val()
+    if not isinstance(acc_left_elbow, (np.ndarray)):
+        acc_left_elbow = [0,0]
+    acc_right_elbow = right_elbow_accum.val()
+    if not isinstance(acc_right_elbow, (np.ndarray)):
+        acc_right_elbow = [0,0] 
           
-        
+    pointsofinterest = [
+        {
+            'valid': True,
+            'coords': np.rint(acc_left_elbow[:2]),
+            'id': 1,
+        },
+        {
+            'valid': True,
+            'coords': np.rint(acc_right_elbow[:2]),
+            'id': 2,
+        },
+        #np.rint(acc_left_elbow[:2]),
+        #np.rint(acc_right_elbow[:2])
+    ]
+    if 'elbow_position' in feedback:
+        pointsofinterest[0]['valid'] = False
+        pointsofinterest[1]['valid'] = False
+        # pointsofinterest.append(np.rint(acc_left_elbow[:2]))
+        # pointsofinterest.append(np.rint(acc_right_elbow[:2]))
                 
                 
-    return (feedback, possible_corrections)
+    return (feedback, possible_corrections, pointsofinterest)

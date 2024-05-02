@@ -346,6 +346,6 @@ def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List]:
                 feedback["knee_position"] = "Open your knees!!!"
                 
     
-            
-    return (feedback, possible_corrections)
+    pointsofinterest = []
+    return (feedback, possible_corrections, pointsofinterest)
 
