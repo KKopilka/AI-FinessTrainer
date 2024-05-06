@@ -1,10 +1,11 @@
 import cv2
+import onnxruntime
 from ultralytics import YOLO
 import numpy as np
-from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate
 from ai_trainer.drawing import *
 from ai_trainer.properties import *
 import argparse
+from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate
 from ai_trainer.pac import PointAccumulator
@@ -31,7 +32,7 @@ else:
 
 def main():
 
-    model = YOLO('models/yolo2/best.pt')
+    model = YOLO('models/yolo2/best.pt', task='pose')
     video_path = 'assets/left_side_cut.mp4'
     # video_path = 'assets/biceps.mp4'
     cap = cv2.VideoCapture(video_path)
@@ -52,6 +53,7 @@ def main():
 
         if success:
             results = model(frame)
+            # kps = results.xyxy[0]
             kps = results[0].keypoints.data.cpu().numpy()[0]
             # kps = results[0].keypoints.xy.cpu().numpy()[0]
             x, y, z = kps.T[:3]
