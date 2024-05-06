@@ -52,3 +52,26 @@ def score_table(img, count):
     cv2.putText(img, text, (10, 50), font, font_scale, font_color, font_thickness)
 
     return img
+
+def score_table_2(img, count):
+    text = "Your score: " + str(count)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1
+    font_thickness = 2
+    font_color = (255, 255, 255) 
+
+    text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
+    text_width, text_height = text_size
+
+    text_x = 10
+    text_y = 50
+    padding = 5
+    background_x = text_x - padding
+    background_y = text_y - text_height - padding
+    background_width = text_width + 2 * padding
+    background_height = text_height + 2 * padding
+
+    # cv2.rectangle(img, (5, 23), (5 + background_width, 23 + background_height), (30, 144, 255), -1, cv2.LINE_AA)
+    cv2.putText(img, text, (10, 80), font, font_scale, font_color, font_thickness)
+
+    return img

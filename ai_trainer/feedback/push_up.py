@@ -43,12 +43,13 @@ def get_angle(kps: np.ndarray) -> float:
     right_hand = estimate_pose_angle(right_shoulder, right_elbow, right_wrist)
     left_hand = estimate_pose_angle(left_shoulder, left_elbow, left_wrist)
     avg_angle = (right_hand + left_hand) / 2
-    print("angle: ", avg_angle)
+    # print("angle: ", avg_angle)
     return avg_angle
 
-def counts_calculate(kps: np.ndarray, count: int, dirr: int):
+def counts_calculate_push_up(kps: np.ndarray, count: int, dirr: int):
+    # print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
-    per = np.interp(angle, (90, 160), (0, 100))
+    per = np.interp(angle, (100, 170), (0, 100))
     if per == 100:
         if dirr == 0:
             # count += 0.5
@@ -95,7 +96,7 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     wrist_shoulder_distance = np.linalg.norm(right_shoulder - right_wrist) + np.linalg.norm(left_shoulder - left_wrist)
     shoulder_distance = np.linalg.norm(right_shoulder - left_shoulder)
     are_wrists_wider_than_shoulders = wrist_shoulder_distance > 1.05 * shoulder_distance  # assuming 5% wider
-    print(are_arms_straight, are_wrists_wider_than_shoulders)
+    # print(are_arms_straight, are_wrists_wider_than_shoulders)
     return are_arms_straight and are_wrists_wider_than_shoulders
 
 def wrists_wider_than_shoulders(kps: np.ndarray) -> bool:
@@ -107,9 +108,9 @@ def wrists_wider_than_shoulders(kps: np.ndarray) -> bool:
     shoulders_width = dist([right_shoulder], [left_shoulder])[0][0]
     wrists_width = dist([right_wrist], [left_wrist])[0][0]
     margin = 0.6 * shoulders_width
-    print("s", shoulders_width)
-    print("w", wrists_width)
-    print("margin: ", margin)
+    # print("s", shoulders_width)
+    # print("w", wrists_width)
+    # print("margin: ", margin)
     # return wrists_width < shoulders_width + margin
     return shoulders_width - margin < wrists_width < shoulders_width + margin
 

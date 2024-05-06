@@ -5,9 +5,9 @@ import numpy as np
 from ai_trainer.drawing import *
 from ai_trainer.properties import *
 import argparse
-from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate
-from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate
-from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate
+from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate_front_squat, counts_calculate_front_squat_incorrect
+from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate_push_up
+from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate_biceps
 from ai_trainer.pac import PointAccumulator
 
 parser = argparse.ArgumentParser(description='Run pose estimation on a video for a specific exercise')
@@ -18,26 +18,30 @@ if args.exercise.lower() == 'front_squat':
     # illustrate_exercise("assets/frontalniye-prisedaniya.jpeg")
     active_keypoints = [10,8,6,12,11,5,7,9]
     exercise_feedback_func = give_feedback_front_squat
+    counts_calculate = counts_calculate_front_squat
 elif args.exercise.lower() == 'push_up': 
     # illustrate_exercise("other_exercise_image.jpeg")
     active_keypoints = [9, 7, 5, 6, 8, 10]
     exercise_feedback_func = give_feedback_push_up 
+    counts_calculate = counts_calculate_push_up
 elif args.exercise.lower() == 'biceps': 
     # illustrate_exercise("other_exercise_image.jpeg")
     active_keypoints = []
     exercise_feedback_func = give_feedback_biceps
+    counts_calculate = counts_calculate_biceps
 else:
     print("Invalid exercise name provided.")
     exit()
 
 def main():
-
     model = YOLO('models/yolo2/best.pt', task='pose')
     video_path = 'assets/left_side_cut.mp4'
-    # video_path = 'assets/biceps.mp4'
+    # video_path = 'assets/push_up2.mp4'
     cap = cv2.VideoCapture(video_path)
     count = 0
     dirr = 1
+    incorrect_count = 0
+    incorrect_dirr = 1
 
     validFrames = {}
 
@@ -76,9 +80,11 @@ def main():
             #     pt2 = tuple(kps[active_keypoints[i+1][:2]].astype(int))
             #     cv2.line(frame, pt1, pt2, (255, 255, 255), 8)
             #     cv2.circle(frame, pt1, 5, (0, 0, 0), 5)
-            feedback, possible_corrections, pointsofinterest = exercise_feedback_func(pose_3d)
+            feedback, possible_corrections, pointsofinterest, feedback_flag = exercise_feedback_func(pose_3d)
             offset = 0
+
             for correction in possible_corrections:
+                print(feedback_flag)
                 if correction in list(feedback.keys()):
                     frame = draw_text(
                         image=frame,
@@ -89,8 +95,16 @@ def main():
                         thickness=2,
                     )
                     offset += 1
-            count, dirr = counts_calculate(pose_3d, count, dirr)
+            if feedback_flag == False:
+                count, dirr = counts_calculate(pose_3d, count, dirr)
+            if feedback_flag == True:
+                incorrect_count, incorrect_dirr = counts_calculate_front_squat_incorrect(pose_3d, incorrect_count, incorrect_dirr)
+
             score_table(frame, count)
+            score_table_2(frame, incorrect_count)
+            # count_correct_attempts, dirr = counts_calculate(pose_3d, count_correct_attempts, dirr)
+            # # count, dirr = counts_calculate(pose_3d, count, dirr)
+            # score_table(frame, count)
             
             # Разбираем пришедшие точки интереса
             for poi in pointsofinterest:

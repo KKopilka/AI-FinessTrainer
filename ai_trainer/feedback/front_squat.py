@@ -173,7 +173,7 @@ def get_angle(kps: np.ndarray)->float:
     # print("angle: ", angle_r)
     avg_angle = (angle_l + angle_r) / 2
     # avg_angle = np.interp(angle_r, (20, 60), (0, 100))
-    # print("angle2: ", avg_angle)
+    print("angle2: ", avg_angle)
     
     return avg_angle
 
@@ -291,7 +291,8 @@ def is_in_right_direction(kps: np.ndarray)->bool:
     
     return True
 
-def counts_calculate(kps: np.ndarray, count: int, dirr: int):
+def counts_calculate_front_squat(kps: np.ndarray, count: int, dirr: int):
+    print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
     per = np.interp(angle, (85, 160), (0, 100))
     if per == 100:
@@ -306,7 +307,42 @@ def counts_calculate(kps: np.ndarray, count: int, dirr: int):
 
     return [count, dirr]
 
-def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List]:
+def counts_calculate_front_squat_incorrect(kps: np.ndarray, incorrect_count: int, incorrect_dirr: int):
+    print(f"counts_calculate: {incorrect_dirr} {incorrect_count}")
+    angle = get_angle(kps)
+    per = np.interp(angle, (85, 160), (0, 100))
+    if per == 100:
+        if incorrect_dirr == 0:
+            # count += 0.5
+            incorrect_dirr = 1
+    # полное выполнение упражнения
+    if per == 0:
+        if incorrect_dirr == 1:
+            incorrect_count += 1
+            incorrect_dirr = 0
+
+    return [incorrect_count, incorrect_dirr]
+# def counts_calculate_front_squat(kps: np.ndarray, count_correct: int, count_attempts: int, dirr: int):
+#     print(f"counts_calculate: {dirr} {count_correct} {count_attempts}")
+#     angle = get_angle(kps)
+#     per = np.interp(angle, (85, 160), (0, 100))
+#     feedback_flag = False
+    
+#     if per == 100:
+#         if dirr == 0:
+#             dirr = 1
+#     # полное выполнение упражнения
+#     if per == 0:
+#         if dirr == 1:
+#             count_correct += 1
+#             dirr = 0
+#     else:
+#         count_attempts += 1
+#         feedback_flag = True
+
+#     return count_correct, count_attempts, dirr, feedback_flag
+
+def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List, List]:
     """Give feedback on the person's front squat technique.
     
     The feedback is given in the form of a dictionary with the following keys:
@@ -332,20 +368,24 @@ def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List]:
     """
 
     feedback = {'is_in_position': False}
+    feedback_flag = False
     possible_corrections = ['knee_bend', 'feet_position', 'elbow_position', 'knee_position']
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         if not are_feet_well_positioned(kps):
             feedback['feet_position'] = "Feet should be at shoulder width!!!"
+            feedback_flag = True
             
         if are_elbows_down(kps):
             feedback['elbow_position'] = "Rise your elbows!!!"
+            feedback_flag = True
           
         if are_knees_bending(kps):
             if are_knees_caving(kps):
                 feedback["knee_position"] = "Open your knees!!!"
+                feedback_flag = True
                 
     
     pointsofinterest = []
-    return (feedback, possible_corrections, pointsofinterest)
+    return (feedback, possible_corrections, pointsofinterest, feedback_flag)
 

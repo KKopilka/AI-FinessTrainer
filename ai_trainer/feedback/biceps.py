@@ -38,11 +38,11 @@ def get_angle(kps: np.ndarray) -> float:
     right_hand = estimate_pose_angle(right_shoulder, right_elbow, right_wrist)
     left_hand = estimate_pose_angle(left_shoulder, left_elbow, left_wrist)
     avg_angle = (right_hand + left_hand) / 2
-    print("angle: ", avg_angle)
+    # print("angle: ", avg_angle)
     return avg_angle
 
-def counts_calculate(kps: np.ndarray, count: int, dirr: int):
-    print(f"counts_calculate: {dirr} {count}")
+def counts_calculate_biceps(kps: np.ndarray, count: int, dirr: int):
+    # print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
     per = np.interp(angle, (28, 165), (0, 100))
     if per == 100:
@@ -94,10 +94,10 @@ def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbo
     left_elbow_moved_up = left_elbow[1] - acc_left_elbow[1] > 5
     right_elbow_moved_up = right_elbow[1] - acc_right_elbow[1] > 5
     # print('not: ', not_right)
-    print("right_elbow: ", right_elbow)
-    print("left_elbow: ", left_elbow)
-    print("initial_right_elbow: ", acc_right_elbow)
-    print("initial_left_elbow: ", acc_left_elbow)
+    # print("right_elbow: ", right_elbow)
+    # print("left_elbow: ", left_elbow)
+    # print("initial_right_elbow: ", acc_right_elbow)
+    # print("initial_left_elbow: ", acc_left_elbow)
 
     left_elbow_accum.store(left_elbow)
     right_elbow_accum.store(right_elbow)
