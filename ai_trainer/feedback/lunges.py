@@ -1,59 +1,9 @@
 from typing import Tuple, Dict, List
 import math
 import numpy as np
-from ai_trainer.drawing import draw_dotted_line
 import cv2
 from sklearn.metrics import euclidean_distances as dist
 
-def get_bending_angle(hip: np.ndarray, knee: np.ndarray, ankle: np.ndarray)->float:
-    """Get the bending angle of the leg/knee.
-    
-    Note: all keypoints must be not normalized and from the same leg.
-
-    Args:
-        hip (np.ndarray): not normalized hip keypoint.
-        knee (np.ndarray): not normalized knee keypoint.
-        ankle (np.ndarray): not normalized ankle keypoint.
-
-    Returns:
-        angle_degrees(float): knee bending angle in degrees.
-    """
-    # получаем координаты точек
-    # _, x1, y1 = hip
-    # _, x2, y2 = knee
-    # _, x3, y3 = ankle
-
-    # angle_degrees = math.degrees(math.atan2(y3 - y2, x3 - x2) -
-    #                         math.atan2(y1 - y2, x1 - x2))
-    # if angle_degrees < 0:
-    #         angle_degrees += 180
-
-    # return angle_degrees
-    # femur
-    line1 = ((hip[2], hip[1]), (knee[2], knee[1])) # 2=z, 1=y
-    #tibia
-    line2 = ((knee[2], knee[1]), (ankle[2], ankle[1]))
-
-    # Calculate the direction vectors of the lines
-    vector1 = (line1[1][0] - line1[0][0], line1[1][1] - line1[0][1])
-    vector2 = (line2[1][0] - line2[0][0], line2[1][1] - line2[0][1])
-
-    # Calculate the dot product of the two direction vectors
-    dot_product = vector1[0] * vector2[0] + vector1[1] * vector2[1]
-
-    # Calculate the magnitudes of the vectors
-    magnitude1 = math.sqrt(vector1[0]**2 + vector1[1]**2)
-    magnitude2 = math.sqrt(vector2[0]**2 + vector2[1]**2)
-
-    # Calculate the cosine of the angle between the lines
-    cosine_theta = dot_product / (magnitude1 * magnitude2)
-
-    # Calculate the angle in radians
-    angle_radians = math.acos(cosine_theta)
-
-    # Convert the angle to degrees
-    angle_degrees = math.degrees(angle_radians)
-    return angle_degrees
 
 def are_lunges_proper_left(kps: np.ndarray) -> bool:
     left_hip = kps[11]
@@ -134,7 +84,71 @@ def is_lunge_start_position(kps: np.ndarray) -> bool:
 
     return is_one_leg_stepped_back and is_back_leaned_forward
 
-def give_feedback(kps: np.ndarray)->Tuple[Dict, List]:
+def estimate_pose_angle(a, b, c):
+    """
+    Calculate the pose angle for object.
+
+    Args:
+        a (float) : The value of pose point a
+        b (float): The value of pose point b
+        c (float): The value o pose point c
+
+    Returns:
+        angle (degree): Degree value of angle between three points
+    """
+    a, b, c = np.array(a), np.array(b), np.array(c)
+    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
+    angle = np.abs(radians * 180.0 / np.pi)
+    if angle > 180.0:
+        angle = 360 - angle
+    # print("angle: ", angle)
+    return angle
+
+def get_angle(kps: np.ndarray)->float:
+    """Check if knees are bending of if the legs are straight.
+
+    Args:
+        kps (np.ndarray): denormalized 3d pose keypoints.
+
+    Returns:
+        bool: True if knees are bending. False if legs are straight. Knees are considered
+            to be bending if the bending angle is bigger than 50 degrees. The bending angle
+            is the angle between the femur and the tibia, in degrees.
+    """
+    
+    right_hip = kps[12]
+    right_knee = kps[14]
+    right_ankle = kps[16]
+
+    left_hip = kps[11]
+    left_knee = kps[13]
+    left_ankle = kps[15]
+    angle_l = estimate_pose_angle(left_hip, left_knee, left_ankle)
+    angle_r = estimate_pose_angle(right_hip, right_knee, right_ankle)
+    # print("1111111111", angle_r)
+    # knee_vertical_angle_right = find_angle(right_hip, np.array([right_knee[0], 0, 0]), right_knee)
+    # knee_vertical_angle_left = find_angle(left_hip, np.array([left_knee[0], 0, 0]), left_knee)
+    # print(knee_vertical_angle_right, knee_vertical_angle_left)
+    # print("angle: ", angle_r)
+    # avg_angle = (angle_l + angle_r) / 2
+    # avg_angle = np.interp(angle_r, (20, 60), (0, 100))
+    print("angle2: ", angle_l, angle_r)
+    
+    return angle_l, angle_r
+
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_lunges(kps: np.ndarray, correct: int):
+    print(f"counts_calculate: {correct}")
+    angle_l, angle_r = get_angle(kps)
+    per = np.interp(angle_l, (85, 160), (0, 100))
+    taskCounter.Count(per, correct == 1)
+
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
+
+def give_feedback_lunges(kps: np.ndarray)->Tuple[Dict, List]:
     """Give feedback on the person's front squat technique.
     
     The feedback is given in the form of a dictionary with the following keys:
@@ -155,17 +169,18 @@ def give_feedback(kps: np.ndarray)->Tuple[Dict, List]:
         possible_corrections (List): possible corrections to the person's front squat technique.
     """
     feedback = {'is_in_position': False}
+    feedback_flag = False
     possible_corrections = ['knee_bend', 'feet_position', 'elbow_position', 'knee_position']
-
-   
- 
     if position_back(kps):
         feedback["knee_position"] = "Right"
+        feedback_flag = True
     else:
         feedback["knee_position"] = "Bad"
+        feedback_flag = True
     # if are_lunges_proper_right(kps):
     #     feedback["knee_position"] = "Right"
         
     # else:
     #     feedback["knee_position"] = "The knee angle is not 90 degrees"
-    return (feedback, possible_corrections)
+    pointsofinterest = []
+    return (feedback, possible_corrections, pointsofinterest, feedback_flag)
