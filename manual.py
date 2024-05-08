@@ -8,6 +8,7 @@ import argparse
 from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate_front_squat, counts_calculate_front_squat_incorrect
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate_push_up
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate_biceps
+from ai_trainer.feedback.barbell_pull import give_feedback_barbell_pull, counts_calculate_barbell_pull
 from ai_trainer.pac import PointAccumulator
 
 
@@ -30,13 +31,19 @@ elif args.exercise.lower() == 'biceps':
     active_keypoints = []
     exercise_feedback_func = give_feedback_biceps
     counts_calculate = counts_calculate_biceps
+elif args.exercise.lower() == 'barbell_pull': 
+    # illustrate_exercise("other_exercise_image.jpeg")
+    active_keypoints = []
+    exercise_feedback_func = give_feedback_barbell_pull
+    counts_calculate = counts_calculate_barbell_pull
 else:
     print("Invalid exercise name provided.")
     exit()
 
 def main():
     model = YOLO('models/yolo3/best.pt', task='pose')
-    video_path = 'assets/left_side_cut.mp4'
+    # video_path = 'assets/left_side_cut.mp4'
+    video_path = 'assets/barbell_pull.mp4'
     # video_path = 'assets/push_up2.mp4'
     cap = cv2.VideoCapture(video_path)
     count = 0
@@ -85,7 +92,7 @@ def main():
             offset = 0
 
             for correction in possible_corrections:
-                print(feedback_flag)
+                # print(feedback_flag)
                 if correction in list(feedback.keys()):
                     frame = draw_text(
                         image=frame,
