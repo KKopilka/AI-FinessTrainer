@@ -48,7 +48,7 @@ def score_table(img, count):
     background_width = text_width + 2 * padding
     background_height = text_height + 2 * padding
 
-    cv2.rectangle(img, (5, 23), (5 + background_width, 23 + background_height), (30, 144, 255), -1, cv2.LINE_AA)
+    cv2.rectangle(img, (5, 23), (5 + background_width, 23 + background_height), (0, 255, 0), -1, cv2.LINE_AA)
     cv2.putText(img, text, (10, 50), font, font_scale, font_color, font_thickness)
 
     return img
@@ -71,7 +71,7 @@ def score_table_2(img, count):
     background_width = text_width + 2 * padding
     background_height = text_height + 2 * padding
 
-    # cv2.rectangle(img, (5, 23), (5 + background_width, 23 + background_height), (30, 144, 255), -1, cv2.LINE_AA)
-    cv2.putText(img, text, (10, 80), font, font_scale, font_color, font_thickness)
+    cv2.rectangle(img, (5, 60), (5 + background_width, 60 + background_height), (30, 30, 255), -1, cv2.LINE_AA)
+    cv2.putText(img, text, (10, 83), font, font_scale, font_color, font_thickness)
 
     return img

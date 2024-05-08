@@ -10,6 +10,7 @@ from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate_
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate_biceps
 from ai_trainer.pac import PointAccumulator
 
+
 parser = argparse.ArgumentParser(description='Run pose estimation on a video for a specific exercise')
 parser.add_argument('exercise', type=str, help='Name of the exercise to analyze')
 args = parser.parse_args()
@@ -34,7 +35,7 @@ else:
     exit()
 
 def main():
-    model = YOLO('models/yolo2/best.pt', task='pose')
+    model = YOLO('models/yolo3/best.pt', task='pose')
     video_path = 'assets/left_side_cut.mp4'
     # video_path = 'assets/push_up2.mp4'
     cap = cv2.VideoCapture(video_path)
@@ -56,8 +57,8 @@ def main():
         frame = cv2.resize(frame, (800, 650), interpolation=cv2.INTER_AREA)
 
         if success:
-            results = model(frame)
-            # kps = results.xyxy[0]
+            results = model.predict(frame)
+            # kps = results[0].keypoints.xy.cpu().numpy()
             kps = results[0].keypoints.data.cpu().numpy()[0]
             # kps = results[0].keypoints.xy.cpu().numpy()[0]
             x, y, z = kps.T[:3]
@@ -89,19 +90,21 @@ def main():
                     frame = draw_text(
                         image=frame,
                         text=feedback[correction],
-                        origin=(10, 100+offset*30),
+                        origin=(10, 150+offset*30),
                         font_scale=0.8,
                         color=(50, 50, 250),
                         thickness=2,
                     )
                     offset += 1
-            if feedback_flag == False:
-                count, dirr = counts_calculate(pose_3d, count, dirr)
-            if feedback_flag == True:
-                incorrect_count, incorrect_dirr = counts_calculate_front_squat_incorrect(pose_3d, incorrect_count, incorrect_dirr)
+            correct = 1
+            if  feedback_flag == True:
+                correct = 0
 
-            score_table(frame, count)
-            score_table_2(frame, incorrect_count)
+            correctCount, incorrectCount = counts_calculate(pose_3d, correct)
+    
+
+            score_table(frame, correctCount)
+            score_table_2(frame, incorrectCount)
             # count_correct_attempts, dirr = counts_calculate(pose_3d, count_correct_attempts, dirr)
             # # count, dirr = counts_calculate(pose_3d, count, dirr)
             # score_table(frame, count)

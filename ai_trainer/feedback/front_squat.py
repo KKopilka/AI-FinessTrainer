@@ -30,10 +30,20 @@ def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
     a = shoulder
     b = elbow
     # Calculate the angle using the arctangent function
-    angle_radians = math.atan2(b[2] - a[2], b[0] - a[0])
+    #print(f"Z: {a[2]} {b[2]} ")
+    angle_radians = math.atan2(b[1] - a[1], b[0] - a[0]) 
     # Convert the angle from radians to degrees
     angle_degrees = math.degrees(angle_radians)
-    angle_with_vertical_axis = np.abs(90 - np.abs(angle_degrees))
+    print(f"Shoulder/Elbow angle: {angle_degrees} deg")
+    angle_with_vertical_axis = angle_degrees - 90
+    if angle_with_vertical_axis < 0:
+        angle_with_vertical_axis += 360
+
+
+    if angle_with_vertical_axis > 180:
+        angle_with_vertical_axis -= 360
+        angle_with_vertical_axis = np.abs(angle_with_vertical_axis)
+    
     # print("angle_with_vertical_axis: ", angle_with_vertical_axis)
     return angle_with_vertical_axis
 
@@ -53,9 +63,10 @@ def are_elbows_down(kps: np.ndarray)->bool:
 
     angle_right = elbow_inclination(right_shoulder, right_elbow)
     angle_left = elbow_inclination(left_shoulder, left_elbow)
-    # print("1", angle_right)
-    # print("2", angle_left)
-    return (angle_right > 45) and (angle_left > 45)
+
+    print("1", angle_right)
+    print("2", angle_left)
+    return (angle_right < 45) and (angle_left < 45)
 
 def get_bending_angle(hip: np.ndarray, knee: np.ndarray, ankle: np.ndarray)->float:
     """Get the bending angle of the leg/knee.
@@ -291,21 +302,17 @@ def is_in_right_direction(kps: np.ndarray)->bool:
     
     return True
 
-def counts_calculate_front_squat(kps: np.ndarray, count: int, dirr: int):
-    print(f"counts_calculate: {dirr} {count}")
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_front_squat(kps: np.ndarray, correct: int):
+    print(f"counts_calculate: {correct}")
     angle = get_angle(kps)
     per = np.interp(angle, (85, 160), (0, 100))
-    if per == 100:
-        if dirr == 0:
-            # count += 0.5
-            dirr = 1
-    # полное выполнение упражнения
-    if per == 0:
-        if dirr == 1:
-            count += 1
-            dirr = 0
+    taskCounter.Count(per, correct == 1)
 
-    return [count, dirr]
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
 def counts_calculate_front_squat_incorrect(kps: np.ndarray, incorrect_count: int, incorrect_dirr: int):
     print(f"counts_calculate: {incorrect_dirr} {incorrect_count}")

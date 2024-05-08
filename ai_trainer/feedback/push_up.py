@@ -46,21 +46,18 @@ def get_angle(kps: np.ndarray) -> float:
     # print("angle: ", avg_angle)
     return avg_angle
 
-def counts_calculate_push_up(kps: np.ndarray, count: int, dirr: int):
+
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_push_up(kps: np.ndarray, correct: int):
     # print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
     per = np.interp(angle, (100, 170), (0, 100))
-    if per == 100:
-        if dirr == 0:
-            # count += 0.5
-            dirr = 1
-    # полное выполнение упражнения
-    if per == 0:
-        if dirr == 1:
-            count += 1
-            dirr = 0
+    taskCounter.Count(per, correct == 1)
 
-    return [count, dirr]
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
 def is_in_start_position1(kps: np.ndarray) -> bool:
     # Получаем координаты точек носа, правого и левого плеча
@@ -117,12 +114,14 @@ def wrists_wider_than_shoulders(kps: np.ndarray) -> bool:
 
 def give_feedback_push_up(kps: np.ndarray) -> Tuple[Dict, List]:
     feedback = {'is_in_position': False}
+    feedback_flag = False
     possible_corrections = ['wrist_bad', 'start_position', "angle"]
     # if is_in_start_position1(kps):
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         if wrists_wider_than_shoulders(kps):
             feedback['wrist_bad'] = "Place your hands wider than your shoulders!!!"
+            feedback_flag = True
         # if right_angle(kps):
         #     feedback['angle'] = "Right!!!"
     # else:
@@ -132,4 +131,4 @@ def give_feedback_push_up(kps: np.ndarray) -> Tuple[Dict, List]:
         
                 
     pointsofinterest = []         
-    return (feedback, possible_corrections, pointsofinterest)
+    return (feedback, possible_corrections, pointsofinterest, feedback_flag)

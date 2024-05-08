@@ -2,7 +2,6 @@ from typing import Tuple, Dict, List
 import math
 import numpy as np
 from sklearn.metrics import euclidean_distances as dist
-
 from ai_trainer.pac import PointAccumulator
 
 left_elbow_accum = PointAccumulator(100, True, False, False)
@@ -41,21 +40,18 @@ def get_angle(kps: np.ndarray) -> float:
     # print("angle: ", avg_angle)
     return avg_angle
 
-def counts_calculate_biceps(kps: np.ndarray, count: int, dirr: int):
+
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_biceps(kps: np.ndarray, correct: int):
     # print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
     per = np.interp(angle, (28, 165), (0, 100))
-    if per == 100:
-        if dirr == 0:
-            # count += 0.5
-            dirr = 1
-    # полное выполнение упражнения
-    if per == 0:
-        if dirr == 1:
-            count += 1
-            dirr = 0
+    taskCounter.Count(per, correct == 1)
 
-    return [count, dirr]
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
 def are_feet_well_positioned(kps: np.ndarray) -> bool:
     right_ankle = kps[16]
@@ -176,16 +172,21 @@ def is_in_start_position(kps: np.ndarray) -> bool:
 
 def give_feedback_biceps(kps: np.ndarray) -> Tuple[Dict, List, List]:
     feedback = {'is_in_position': False}
+    
+    feedback_flag = False
     possible_corrections = ['feet_position', 'elbow_position', 'elbow_position_second']
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         if not are_feet_well_positioned(kps):
             feedback['feet_position'] = "Feet should be at shoulder width!!!"
+            feedback_flag = True
         elbowPosition = elbow_position_first(kps, initial_left_elbow, initial_right_elbow)
         if elbowPosition == 1:
             feedback['elbow_position'] = "Put your elbows up!!!"
+            feedback_flag = True
         elif elbowPosition == 2:
             feedback['elbow_position'] = "Put your elbows down!!!"
+            feedback_flag = True
         
     acc_left_elbow = left_elbow_accum.val()
     if not isinstance(acc_left_elbow, (np.ndarray)):
@@ -215,4 +216,4 @@ def give_feedback_biceps(kps: np.ndarray) -> Tuple[Dict, List, List]:
         # pointsofinterest.append(np.rint(acc_right_elbow[:2]))
                 
                 
-    return (feedback, possible_corrections, pointsofinterest)
+    return (feedback, possible_corrections, pointsofinterest, feedback_flag)
