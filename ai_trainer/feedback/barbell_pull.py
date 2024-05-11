@@ -9,7 +9,7 @@ taskCounter = TaskCounter()
 def counts_calculate_barbell_pull(kps: np.ndarray, correct: int):
     print(f"counts_calculate: {correct}")
     angle = get_angle(kps)
-    per = np.interp(angle, (20, 80), (0, 100))
+    per = np.interp(angle, (30, 80), (0, 100))
     taskCounter.Count(per, correct == 1)
 
     return [taskCounter.correctCount, taskCounter.ErrorAmount()]
@@ -34,7 +34,7 @@ def estimate_pose_angle(a, b, c):
     # print("angle: ", angle)
     return angle
 
-def get_angle(kps: np.ndarray)->float: 
+def get_angle(kps: np.ndarray) -> float: 
     right_shoulder = kps[6]
     right_elbow = kps[8]
     right_hip = kps[12]
@@ -54,22 +54,7 @@ def get_angle(kps: np.ndarray)->float:
     
     return avg_angle
 
-# def are_elbow_bending(kps: np.ndarray)->bool:
-#     right_shoulder = kps[6]
-#     right_elbow = kps[8]
-#     right_hip = kps[12]
-
-#     left_hip = kps[11]
-#     left_shoulder = kps[5]
-#     left_elbow = kps[7]
-
-#     angle_l = estimate_pose_angle(left_elbow, left_shoulder, left_hip)
-#     angle_r = estimate_pose_angle(right_elbow, right_shoulder, right_hip)
-#     avg_angle = (angle_l + angle_r) / 2
-    
-#     return avg_angle > 95
-
-def elbows_higher_than_shoulders(kps: np.ndarray)->bool:
+def are_elbow_bending(kps: np.ndarray) -> bool:
     right_shoulder = kps[6]
     right_elbow = kps[8]
     right_hip = kps[12]
@@ -82,32 +67,35 @@ def elbows_higher_than_shoulders(kps: np.ndarray)->bool:
     angle_r = estimate_pose_angle(right_elbow, right_shoulder, right_hip)
     avg_angle = (angle_l + angle_r) / 2
     
-    return avg_angle < 95
+    return avg_angle > 70
 
-# def elbows_higher_than_shoulders(kps: np.ndarray) -> bool:
-#     right_shoulder = kps[6]
-#     right_elbow = kps[8]
+initial_left_elbow = [0, 0, 0]
+initial_right_elbow = [0, 0, 0]
 
-#     left_shoulder = kps[5]
-#     left_elbow = kps[7]
+def elbows_higher_than_shoulders(kps: np.ndarray) -> bool:
+    global initial_left_elbow, initial_right_elbow
+    right_shoulder = kps[6]
+    right_elbow = kps[8]
+
+    left_shoulder = kps[5]
+    left_elbow = kps[7]
     
-#     are_elbows_higher_than_shoulders = (
-#         (right_shoulder[1] < right_elbow[1]) and (left_shoulder[1] < left_elbow[1])
-#     )
+    print(right_elbow, right_shoulder)
+    if int(right_elbow[1]) == int(right_shoulder[1]):
+        initial_right_elbow = right_elbow
 
-#     return are_elbows_higher_than_shoulders
+    if int(left_elbow[1]) == int(left_shoulder[1]):
+        initial_left_elbow = left_elbow
 
-def is_in_start_position(kps: np.ndarray)->bool:
-    """Check if the person is in the start position of the front squat.
+    print("l ", initial_left_elbow)
+    print("r ", initial_right_elbow)
+    are_elbows_higher_than_shoulders = (
+        (right_elbow[1] < initial_right_elbow[1]) and (left_elbow[1] < initial_left_elbow[1])
+    )
 
-    Args:
-        kps (np.ndarray): denormalized 3d pose keypoints.
+    return are_elbows_higher_than_shoulders
 
-    Returns:
-        bool: True if the person's wrists are above the shoulders. In other words,
-            the person is in the start position of the front squat. False otherwise.
-    """
-    # wrists higher than elbows and closer to the sholders than the elbows are
+def is_in_start_position(kps: np.ndarray) -> bool:
     right_shoulder = kps[6]
     right_elbow = kps[8]
     right_wrist = kps[10]
@@ -133,8 +121,7 @@ def give_feedback_barbell_pull(kps: np.ndarray) -> Tuple[Dict, List, List]:
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         # if are_elbow_bending(kps):
-        #     print("1111") 
-            # print("2 ", are_elbow_bending(kps))
+
         if elbows_higher_than_shoulders(kps):
             feedback["elbows_position"] = "Elbows should be above the shoulders!!!"
             feedback_flag = True

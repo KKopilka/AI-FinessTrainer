@@ -34,6 +34,7 @@ _TEXT_PUSH_UP = """
                Старайтесь слегка отвести их назад.\n
             3. Держите спину прямо.
     """
+
 _TEXT_BICEPS = """
         *Упражнение с гантелями на бицепс* — это эффективное упражнение на бицепсы, которое можно выполнять как стоя, так и сидя. Основная цель этого упражнения — укрепление бицепсов и улучшение формы рук.
         Упражнение выполняется с гантелями, что позволяет работать с каждой рукой отдельно, обеспечивая равномерное развитие мышц и помогая исправлять асимметрию.
@@ -45,6 +46,7 @@ _TEXT_BICEPS = """
             3. Локти должны быть зафиксированы у тела.\n
             4. Держите спину прямо и не отводите таз вперед.
     """
+    
 def stream_data_squat():
     for word in _TEXT_SQUAT.split(" "):
         yield word + " "
@@ -87,9 +89,12 @@ elif mode == ':basketball: Упражнение с гантелями на би�
 
 
 def video_frame_callback(frame: av.VideoFrame):
-    frame = frame.to_ndarray(format="rgb24")  # Decode and get RGB frame
-    frame, count, dirr = analyzer.analyze_video(frame)  # Process frame
-    return av.VideoFrame.from_ndarray(frame, format="rgb24")  # Encode and return BGR frame
+    frame = frame.to_ndarray(format="rgb24") 
+    try:
+        frame, correctCount, incorrectCount = analyzer.analyze_video(frame) 
+    except BaseException as b:
+        print(b)
+    return av.VideoFrame.from_ndarray(frame, format="rgb24")
 
 # def out_recorder_factory() -> MediaRecorder:
 #         return MediaRecorder(output_video_file)

@@ -5,7 +5,7 @@ import numpy as np
 from ai_trainer.drawing import *
 from ai_trainer.properties import *
 import argparse
-from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate_front_squat, counts_calculate_front_squat_incorrect
+from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate_front_squat
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate_push_up
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate_biceps
 from ai_trainer.feedback.barbell_pull import give_feedback_barbell_pull, counts_calculate_barbell_pull
@@ -48,8 +48,6 @@ def main():
     cap = cv2.VideoCapture(video_path)
     count = 0
     dirr = 1
-    incorrect_count = 0
-    incorrect_dirr = 1
 
     validFrames = {}
 
