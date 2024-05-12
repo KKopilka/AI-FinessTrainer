@@ -7,6 +7,18 @@ from ai_trainer.pac import PointAccumulator
 left_elbow_accum = PointAccumulator(100, True, False, False)
 right_elbow_accum = PointAccumulator(100, True, False, False)
 
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_biceps(kps: np.ndarray, correct: int):
+    # print(f"counts_calculate: {dirr} {count}")
+    angle = get_angle(kps)
+    per = np.interp(angle, (28, 165), (0, 100))
+    taskCounter.Count(per, correct == 1)
+
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
+
 def estimate_pose_angle(a, b, c) -> float:
     """
     Calculate the pose angle for object.
@@ -39,19 +51,6 @@ def get_angle(kps: np.ndarray) -> float:
     avg_angle = (right_hand + left_hand) / 2
     # print("angle: ", avg_angle)
     return avg_angle
-
-
-from ai_trainer.direction_counter import TaskCounter
-
-taskCounter = TaskCounter()
-
-def counts_calculate_biceps(kps: np.ndarray, correct: int):
-    # print(f"counts_calculate: {dirr} {count}")
-    angle = get_angle(kps)
-    per = np.interp(angle, (28, 165), (0, 100))
-    taskCounter.Count(per, correct == 1)
-
-    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
 def are_feet_well_positioned(kps: np.ndarray) -> bool:
     right_ankle = kps[16]

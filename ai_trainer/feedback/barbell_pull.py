@@ -90,7 +90,7 @@ def elbows_higher_than_shoulders(kps: np.ndarray) -> bool:
     print("l ", initial_left_elbow)
     print("r ", initial_right_elbow)
     are_elbows_higher_than_shoulders = (
-        (right_elbow[1] < initial_right_elbow[1]) and (left_elbow[1] < initial_left_elbow[1])
+        (right_elbow[1] > initial_right_elbow[1]) and (left_elbow[1] > initial_left_elbow[1])
     )
 
     return are_elbows_higher_than_shoulders

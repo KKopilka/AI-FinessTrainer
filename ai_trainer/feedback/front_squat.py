@@ -12,6 +12,17 @@ import math
 import numpy as np
 from sklearn.metrics import euclidean_distances as dist
 
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_front_squat(kps: np.ndarray, correct: int):
+    print(f"counts_calculate: {correct}")
+    angle = get_angle(kps)
+    per = np.interp(angle, (85, 160), (0, 100))
+    taskCounter.Count(per, correct == 1)
+
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
 def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
     """Calculate the anle between the vertical and the humerus.
@@ -302,53 +313,6 @@ def is_in_right_direction(kps: np.ndarray)->bool:
     
     return True
 
-from ai_trainer.direction_counter import TaskCounter
-
-taskCounter = TaskCounter()
-
-def counts_calculate_front_squat(kps: np.ndarray, correct: int):
-    print(f"counts_calculate: {correct}")
-    angle = get_angle(kps)
-    per = np.interp(angle, (85, 160), (0, 100))
-    taskCounter.Count(per, correct == 1)
-
-    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
-
-def counts_calculate_front_squat_incorrect(kps: np.ndarray, incorrect_count: int, incorrect_dirr: int):
-    print(f"counts_calculate: {incorrect_dirr} {incorrect_count}")
-    angle = get_angle(kps)
-    per = np.interp(angle, (85, 160), (0, 100))
-    if per == 100:
-        if incorrect_dirr == 0:
-            # count += 0.5
-            incorrect_dirr = 1
-    # полное выполнение упражнения
-    if per == 0:
-        if incorrect_dirr == 1:
-            incorrect_count += 1
-            incorrect_dirr = 0
-
-    return [incorrect_count, incorrect_dirr]
-# def counts_calculate_front_squat(kps: np.ndarray, count_correct: int, count_attempts: int, dirr: int):
-#     print(f"counts_calculate: {dirr} {count_correct} {count_attempts}")
-#     angle = get_angle(kps)
-#     per = np.interp(angle, (85, 160), (0, 100))
-#     feedback_flag = False
-    
-#     if per == 100:
-#         if dirr == 0:
-#             dirr = 1
-#     # полное выполнение упражнения
-#     if per == 0:
-#         if dirr == 1:
-#             count_correct += 1
-#             dirr = 0
-#     else:
-#         count_attempts += 1
-#         feedback_flag = True
-
-#     return count_correct, count_attempts, dirr, feedback_flag
-
 def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List, List]:
     """Give feedback on the person's front squat technique.
     
@@ -364,14 +328,10 @@ def give_feedback_front_squat(kps: np.ndarray) -> Tuple[Dict, List, List]:
 
     Args:
         kps (np.ndarray): denormalized 3d pose keypoints.
-        count (int): current count of completed squats.
-        dirr (int): direction flag for squat completion.
 
     Returns:
         feedback (Dict): feedback on the person's front squat technique.
         possible_corrections (List): possible corrections to the person's front squat technique.
-        count (int): updated count of completed squats.
-        dirr (int): updated direction flag for squat completion.
     """
 
     feedback = {'is_in_position': False}

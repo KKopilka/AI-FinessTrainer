@@ -3,6 +3,18 @@ import math
 import numpy as np
 from sklearn.metrics import euclidean_distances as dist
 
+from ai_trainer.direction_counter import TaskCounter
+
+taskCounter = TaskCounter()
+
+def counts_calculate_push_up(kps: np.ndarray, correct: int):
+    # print(f"counts_calculate: {dirr} {count}")
+    angle = get_angle(kps)
+    per = np.interp(angle, (100, 170), (0, 100))
+    taskCounter.Count(per, correct == 1)
+
+    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
+
 
 def calculate_angle1(point_a: np.ndarray, point_b: np.ndarray, point_c: np.ndarray) -> float:
     """Calculate the angle between three points."""
@@ -45,19 +57,6 @@ def get_angle(kps: np.ndarray) -> float:
     avg_angle = (right_hand + left_hand) / 2
     # print("angle: ", avg_angle)
     return avg_angle
-
-
-from ai_trainer.direction_counter import TaskCounter
-
-taskCounter = TaskCounter()
-
-def counts_calculate_push_up(kps: np.ndarray, correct: int):
-    # print(f"counts_calculate: {dirr} {count}")
-    angle = get_angle(kps)
-    per = np.interp(angle, (100, 170), (0, 100))
-    taskCounter.Count(per, correct == 1)
-
-    return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
 def is_in_start_position1(kps: np.ndarray) -> bool:
     # Получаем координаты точек носа, правого и левого плеча
@@ -115,7 +114,7 @@ def wrists_wider_than_shoulders(kps: np.ndarray) -> bool:
 def give_feedback_push_up(kps: np.ndarray) -> Tuple[Dict, List]:
     feedback = {'is_in_position': False}
     feedback_flag = False
-    possible_corrections = ['wrist_bad', 'start_position', "angle"]
+    possible_corrections = ['wrist_bad', 'start_position']
     # if is_in_start_position1(kps):
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
