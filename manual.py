@@ -9,6 +9,7 @@ from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_ca
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate_push_up
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate_biceps
 from ai_trainer.feedback.barbell_pull import give_feedback_barbell_pull, counts_calculate_barbell_pull
+from ai_trainer.feedback.reverse_push_up import give_feedback_reverse_push_up, counts_calculate_reverse_push_up
 from ai_trainer.pac import PointAccumulator
 
 
@@ -31,11 +32,11 @@ elif args.exercise.lower() == 'biceps':
     active_keypoints = []
     exercise_feedback_func = give_feedback_biceps
     counts_calculate = counts_calculate_biceps
-elif args.exercise.lower() == 'barbell_pull': 
+elif args.exercise.lower() == 'reverse_push_up': 
     # illustrate_exercise("other_exercise_image.jpeg")
     active_keypoints = []
-    exercise_feedback_func = give_feedback_barbell_pull
-    counts_calculate = counts_calculate_barbell_pull
+    exercise_feedback_func = give_feedback_reverse_push_up
+    counts_calculate = counts_calculate_reverse_push_up
 else:
     print("Invalid exercise name provided.")
     exit()
@@ -43,7 +44,7 @@ else:
 def main():
     model = YOLO('models/yolo3/best.pt', task='pose')
     # video_path = 'assets/left_side_cut.mp4'
-    video_path = 'assets/barbell_pull.mp4'
+    video_path = 'assets/reverse_push_up.mp4'
     # video_path = 'assets/push_up2.mp4'
     cap = cv2.VideoCapture(video_path)
     count = 0
@@ -59,7 +60,7 @@ def main():
         # frame_size = int(cap.get(3)), int(cap.get(4))  # frame_w, frame_h
         # img_w, img_h = frame_size
         # cv2.resizeWindow("Video", window_w, window_h)
-        frame = cv2.resize(frame, (800, 650), interpolation=cv2.INTER_AREA)
+        frame = cv2.resize(frame, (900, 650), interpolation=cv2.INTER_AREA)
 
         if success:
             results = model.predict(frame)
