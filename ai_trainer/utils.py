@@ -1,3 +1,10 @@
+"""Utility file.
+
+It includes:
+- canceling the keypoint overlay effect.
+- normalize input image values to a specified range.
+- resize an image to a specified size. 
+"""
 import numpy as np
 import cv2
 from typing import Any, Iterable, Optional, Tuple
@@ -21,6 +28,7 @@ def unpad_points(keypoints: np.ndarray, original_image_size: Tuple[int, int]) ->
     keypoints[..., 1] *= original_height  # y-coordinate
 
     return keypoints
+
 def normalize(image: np.ndarray, floor: float, ceil: float) -> np.ndarray:
     """Normalize the input image values to the specified range.
 
@@ -54,10 +62,8 @@ def pad_image(image: np.ndarray, target_height: int, target_width: int) -> np.nd
     height, width = image.shape[:2]
     pad_height = max(target_height - height, 0)
     pad_width = max(target_width - width, 0)
-    # print(pad_height, pad_width)
     padded_image = cv2.copyMakeBorder(
         image, 0, pad_height, 0, pad_width, cv2.BORDER_CONSTANT, value=0
     )
 
     return padded_image
-

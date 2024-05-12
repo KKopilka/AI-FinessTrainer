@@ -1,11 +1,12 @@
 """
-TaskCounter - Счетчик выполнения упражннений.
-Подсчет происходит через метод Count(percent, isCorrect) в него передается % - выполнения упражнения.
-Если упражение достигло 100%, то происходит смена фазы упражнения (например направления движения части тела).
-Упражнение засчитывается, когда проходит обе фазы. Если во время прохождения одной из фаз была подана ошибка isCorrect = False.
-То счетчик не засчитает упражнение как успешное. Метод ResetState() сбрасывает состояние ошибки у счетчика.
-Метод Reset() сбрасываает счетчик в изначальное состояние.
-ErrorAmount() возвращает количество неуспешных подходов.
+TaskCounter - The counter of exercise execution.
+
+It is counted through the Count(percent, isCorrect) method and the % of the exercise execution is passed to it.
+If the exercise has reached 100%, the exercise phase (e.g. the direction of movement of a body part) is changed.
+The exercise is scored when both phases are passed. If an error isCorrect = False during one of the phases.
+The counter will not count the exercise as successful. The ResetState() method resets the error state of the counter.
+The Reset() method resets the counter to its original state.
+ErrorAmount() returns the number of unsuccessful approaches.
 """
 class TaskCounter:
     def __init__(self) -> None:

@@ -115,7 +115,6 @@ elif mode == ':basketball: Обратные отжимания':
     analyzer = ExerciseAnalyzer('reverse_push_up')
 
 
-
 def video_frame_callback(frame: av.VideoFrame):
     frame = frame.to_ndarray(format="rgb24") 
     try:

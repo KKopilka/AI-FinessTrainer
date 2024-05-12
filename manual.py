@@ -23,17 +23,17 @@ if args.exercise.lower() == 'front_squat':
     exercise_feedback_func = give_feedback_front_squat
     counts_calculate = counts_calculate_front_squat
 elif args.exercise.lower() == 'push_up': 
-    # illustrate_exercise("other_exercise_image.jpeg")
+    # illustrate_exercise("assets/push_up.jpg")
     active_keypoints = [9, 7, 5, 6, 8, 10]
     exercise_feedback_func = give_feedback_push_up 
     counts_calculate = counts_calculate_push_up
 elif args.exercise.lower() == 'biceps': 
-    # illustrate_exercise("other_exercise_image.jpeg")
+    # illustrate_exercise("assets/biceps.jpg")
     active_keypoints = []
     exercise_feedback_func = give_feedback_biceps
     counts_calculate = counts_calculate_biceps
-elif args.exercise.lower() == 'reverse_push_up': 
-    # illustrate_exercise("other_exercise_image.jpeg")
+elif args.exercise.lower() == 'reverse_push_up.jpg': 
+    # illustrate_exercise("assets/biceps.jpg")
     active_keypoints = []
     exercise_feedback_func = give_feedback_reverse_push_up
     counts_calculate = counts_calculate_reverse_push_up

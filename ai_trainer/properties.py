@@ -1,3 +1,4 @@
+"""File with functions for working with cv2."""
 import cv2
 import time
 from AudioCommSys import text_to_speech
@@ -54,7 +55,7 @@ def score_table(img, count):
     return img
 
 def score_table_2(img, count):
-    text = "Your score: " + str(count)
+    text = "Your attempts: " + str(count)
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 1
     font_thickness = 2

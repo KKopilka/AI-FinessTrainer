@@ -104,33 +104,6 @@ def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbo
     else:
         return 0
 
-# def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbow) -> bool:
-#     left_elbow = kps[7]
-#     right_elbow = kps[8]
-#     right_shoulder = kps[6]
-#     left_shoulder = kps[5]
-#     print(initial_left_elbow, initial_right_elbow)
-#     # Разница в координатах X и Y локтей относительно начальных значений
-#     delta_x_left = left_elbow[0] - initial_left_elbow[0]
-#     delta_y_left = left_elbow[1] - initial_left_elbow[1]
-
-#     delta_x_right = right_elbow[0] - initial_right_elbow[0]
-#     delta_y_right = right_elbow[1] - initial_right_elbow[1]
-
-#     # Вычисление относительного положения локтя относительно плеч
-#     distance_from_left_shoulder = abs(left_elbow[0] - left_shoulder[0])
-#     distance_from_right_shoulder = abs(right_elbow[0] - right_shoulder[0])
-
-#     # Проверяем, если локти движутся вперед относительно начального положения
-#     if delta_y_left > 0 or delta_y_right > 0:
-#         # Проверяем, если локти находятся ближе к плечам, чем в начальном положении
-#         if distance_from_left_shoulder < abs(initial_left_elbow[0] - left_shoulder[0]) or \
-#                 distance_from_right_shoulder < abs(initial_right_elbow[0] - right_shoulder[0]):
-#             print("Elbow moving forward")
-#             return True
-#     print("Elbow not moving forward")
-#     return False
-
 initial_left_elbow = [0, 0, 0]
 initial_right_elbow = [0, 0, 0]
 initial_position_set = False

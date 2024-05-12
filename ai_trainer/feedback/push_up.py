@@ -15,16 +15,6 @@ def counts_calculate_push_up(kps: np.ndarray, correct: int):
 
     return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
-
-def calculate_angle1(point_a: np.ndarray, point_b: np.ndarray, point_c: np.ndarray) -> float:
-    """Calculate the angle between three points."""
-    ba = point_a - point_b
-    bc = point_c - point_b
-    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    angle = np.arccos(cosine_angle)
-    angle = np.degrees(angle)
-    return angle
-
 def estimate_pose_angle(a, b, c) -> float:
     """
     Calculate the pose angle for object.
@@ -55,18 +45,7 @@ def get_angle(kps: np.ndarray) -> float:
     right_hand = estimate_pose_angle(right_shoulder, right_elbow, right_wrist)
     left_hand = estimate_pose_angle(left_shoulder, left_elbow, left_wrist)
     avg_angle = (right_hand + left_hand) / 2
-    # print("angle: ", avg_angle)
     return avg_angle
-
-def is_in_start_position1(kps: np.ndarray) -> bool:
-    # Получаем координаты точек носа, правого и левого плеча
-    nose = kps[0]
-    right_shoulder = kps[6]
-    left_shoulder = kps[5]
-
-    # Проверяем, что все точки видны на изображении (Z-координата больше 0)
-    return all(coord[2] > 0 for coord in [nose, right_shoulder, left_shoulder])
-
 
 def is_in_start_position(kps: np.ndarray) -> bool:
     right_shoulder = kps[6]
