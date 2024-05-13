@@ -32,15 +32,15 @@ streamlit run app/live.py
 
 ## Project roadmap 📝
 
-[X] Train a model for human pose estimation.
+- [x] Train a model for human pose estimation.
 
-[X] Integration of the model into the project, processing of key points.
+- [x] Integration of the model into the project, processing of key points.
 
-[X] Add exercises for major muscle groups.
+- [x] Add exercises for major muscle groups.
 
-[X] Add a counter for approaches and attempts.
+- [x] Add a counter for approaches and attempts.
 
-[X] Run locally or through a browser (streamlit).
+- [x] Run locally or through a browser (streamlit).
 
 
 ## Some ideas 📝
