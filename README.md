@@ -1,7 +1,7 @@
 # AI-FitnessTrainer using YOLOv8-pose 🏋️
 
 <p align="center">
-<img src="assets/ai-trainer.jpg"
+<img src="docs/ai-trainer.jpg"
     alt="ai_trainer"
     width=550 />
 </p>
@@ -11,15 +11,6 @@ In today's world, a healthy lifestyle is becoming increasingly relevant, and wit
 This repository provides a set of tools to help you improve your technique for the following exercises: **front squats, wide-arm push-ups, biceps push-ups, reverse push-ups**. This intelligent assistant analyzes your technique in real time, evaluates your posture using an AI model ([yolov8-pose](https://docs.ultralytics.com/ru/tasks/pose/)) and gives you feedback on your form.
 
 A counter for correctly completed sets and so-called attempts to perform the exercise correctly has also been added. This will help you better understand your exercise statistics.
-
-<!-- ## 📝 Table of Contents
-- [Less Pain, More Gain. Lift Weights With Your AI Trainer 🏋️📈](#less-pain-more-gain-lift-weights-with-your-ai-trainer-️)
-  - [🪧 Description](#-description)
-  - [📝 Table of Contents](#-table-of-contents)
-  - [🚀 Usage](#-usage)
-  - [⚙️ About The Pose Estimation Model](#️-about-the-pose-estimation-model)
-  - [🩺 Project Roadmap](#-project-roadmap)
-  - [👥  Acknowledgements](#--acknowledgements) -->
 
 ## How to use ✔️
 1. Clone repository.
