@@ -2,7 +2,10 @@ import streamlit as st
 import av
 from streamlit_webrtc import VideoHTMLAttributes, webrtc_streamer
 from aiortc.contrib.media import MediaRecorder
+import sys
+sys.path.append('\AI-Trainer')
 from exercise_analyzer import ExerciseAnalyzer
+
 from ai_trainer.properties import *
 
 
@@ -84,7 +87,7 @@ left_column, right_column = st.columns(2)
 
 if mode == ':basketball: Фронтальные приседания':
     with left_column:
-        st.image("assets/frontalniye-prisedaniya.jpeg", width=650)
+        st.image("./assets/frontalniye-prisedaniya.jpeg", width=650)
     with right_column:
         st.write_stream(stream_data_squat)
         
@@ -92,7 +95,7 @@ if mode == ':basketball: Фронтальные приседания':
 
 elif mode == ':basketball: Отжимания с широкой постановкой рук':
     with left_column:
-        st.image("assets/push_up.jpg", width=650)
+        st.image("./assets/push_up.jpg", width=650)
     with right_column:
         st.write_stream(stream_data_push_up)
 
@@ -100,7 +103,7 @@ elif mode == ':basketball: Отжимания с широкой постанов
 
 elif mode == ':basketball: Упражнение с гантелями на бицепс':
     with left_column:
-        st.image("assets/biceps.jpg", width=650)
+        st.image("./assets/biceps.jpg", width=650)
     with right_column:
         st.write_stream(stream_data_biceps)
 
@@ -108,7 +111,7 @@ elif mode == ':basketball: Упражнение с гантелями на би�
 
 elif mode == ':basketball: Обратные отжимания':
     with left_column:
-        st.image("assets/reverse_push_up.jpg", width=650)
+        st.image("./assets/reverse_push_up.jpg", width=650)
     with right_column:
         st.write_stream(stream_data_reverse_push_up)
 

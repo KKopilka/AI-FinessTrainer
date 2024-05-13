@@ -1,5 +1,4 @@
 import cv2
-import onnxruntime
 from ultralytics import YOLO
 import numpy as np
 from ai_trainer.drawing import *
@@ -33,7 +32,7 @@ elif args.exercise.lower() == 'biceps':
     exercise_feedback_func = give_feedback_biceps
     counts_calculate = counts_calculate_biceps
 elif args.exercise.lower() == 'reverse_push_up': 
-    # illustrate_exercise("assets/reverse_push_up.jpg")
+    # illustrate_exercise("assets/biceps.jpg")
     active_keypoints = []
     exercise_feedback_func = give_feedback_reverse_push_up
     counts_calculate = counts_calculate_reverse_push_up
@@ -42,7 +41,7 @@ else:
     exit()
 
 def main():
-    model = YOLO('models/yolo4/v8_x_pose.pt', task='pose')
+    model = YOLO('models/yolo3/best.pt', task='pose')
     # video_path = 'assets/left_side_cut.mp4'
     video_path = 'assets/reverse_push_up.mp4'
     # video_path = 'assets/push_up2.mp4'

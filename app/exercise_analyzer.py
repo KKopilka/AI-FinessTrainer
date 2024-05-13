@@ -4,6 +4,7 @@ import numpy as np
 from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate_front_squat
 from ai_trainer.feedback.push_up import give_feedback_push_up, counts_calculate_push_up
 from ai_trainer.feedback.biceps import give_feedback_biceps, counts_calculate_biceps
+from ai_trainer.feedback.reverse_push_up import give_feedback_reverse_push_up, counts_calculate_reverse_push_up
 from ai_trainer.drawing import *
 from ai_trainer.properties import *
 import argparse
@@ -27,6 +28,10 @@ class ExerciseAnalyzer:
             self.active_keypoints = []
             self.exercise_feedback_func = give_feedback_biceps 
             self.counts_calculate = counts_calculate_biceps
+        elif self.exercise_name == 'reverse_push_up':
+            self.active_keypoints = []
+            self.exercise_feedback_func = give_feedback_reverse_push_up 
+            self.counts_calculate = counts_calculate_reverse_push_up
         else:
             raise ValueError("Invalid exercise name provided.")
 
