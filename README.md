@@ -8,7 +8,7 @@
 
 In today's world, a healthy lifestyle is becoming increasingly relevant, and with it, interest in sports activities is growing. However, gaining experience and knowledge in this field can be a challenging task for many people. In this context, the application of artificial intelligence (AI) in the sports sector becomes a key element of successful training, analysis, and development of sports teams and individual athletes.
 
-This repository provides a set of tools to help you improve your technique for the following exercises: **front squats, wide-arm push-ups, biceps push-ups, reverse push-ups**. This intelligent assistant analyzes your technique in real time, evaluates your posture using an AI model ([yolov8-pose](https://docs.ultralytics.com/ru/tasks/pose/)) and gives you feedback on your form.
+This repository provides a set of tools to help you improve your technique for the following exercises: **front squats, wide-arm push-ups, biceps push-ups, reverse push-ups**. This intelligent assistant analyzes your technique in real time, evaluates your posture using an AI model ([yolov8-pose](https://docs.ultralytics.com/tasks/pose/)) and gives you feedback on your form.
 
 A counter for correctly completed sets and so-called attempts to perform the exercise correctly has also been added. This will help you better understand your exercise statistics.
 
