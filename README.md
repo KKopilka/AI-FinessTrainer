@@ -42,6 +42,10 @@ streamlit run app/live.py
 
 - [x] Run locally or through a browser (streamlit).
 
+- [ ] Convert the project to an .exe file.
+
+- [ ] Launching via Docker.
+
 
 ## Some ideas 📝
 This project is not a fully finished version, so it can still be finalized.

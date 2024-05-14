@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import cv2
 from ultralytics import YOLO
 import numpy as np
@@ -13,7 +14,7 @@ from ai_trainer.pac import PointAccumulator
 
 
 parser = argparse.ArgumentParser(description='Run pose estimation on a video for a specific exercise')
-parser.add_argument('exercise', type=str, help='Name of the exercise to analyze')
+parser.add_argument('exercise', type=str, choices=['front_squat', 'push_up', 'biceps', 'reverse_push_up'], help='Name of the exercise to analyze')
 args = parser.parse_args()
 
 if args.exercise.lower() == 'front_squat':
@@ -45,7 +46,7 @@ def main():
     # video_path = 'assets/left_side_cut.mp4'
     video_path = 'assets/reverse_push_up.mp4'
     # video_path = 'assets/push_up2.mp4'
-    cap = cv2.VideoCapture(video_path)
+    cap = cv2.VideoCapture(1)
     count = 0
     dirr = 1
 
