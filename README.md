@@ -27,7 +27,7 @@ python manual.py <exercise_name>
 ```
 4. It is possible to run the project with streamlit.
 ```
-streamlit run app/live.py
+streamlit run app/live.py 
 ```
 
 ## Project roadmap 📝
@@ -44,7 +44,7 @@ streamlit run app/live.py
 
 - [ ] Convert the project to an .exe file.
 
-- [ ] Launching via Docker.
+- [х] Launching via Docker.
 
 
 ## Some ideas 📝
