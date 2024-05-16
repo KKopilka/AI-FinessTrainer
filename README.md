@@ -44,7 +44,7 @@ streamlit run app/live.py
 
 - [ ] Convert the project to an .exe file.
 
-- [х] Launching via Docker.
+- [x] Launching via Docker.
 
 
 ## Some ideas 📝
