@@ -115,11 +115,11 @@ else:
         video_html_attrs=VideoHTMLAttributes(autoPlay=True, controls=False, muted=False, width=1000),
         async_processing=True,
         mode=WebRtcMode.SENDRECV,
-        # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]} # Add this config
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]} # Add this config
 
-        rtc_configuration={
-            "iceServers":[{"urls":"stun:stun.relay.metered.ca:80"},{"urls":"turn:global.relay.metered.ca:80","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turn:global.relay.metered.ca:80?transport=tcp","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turn:global.relay.metered.ca:443","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turns:global.relay.metered.ca:443?transport=tcp","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"}]
-        },
+        # rtc_configuration={
+        #     "iceServers":[{"urls":"stun:stun.relay.metered.ca:80"},{"urls":"turn:global.relay.metered.ca:80","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turn:global.relay.metered.ca:80?transport=tcp","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turn:global.relay.metered.ca:443","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turns:global.relay.metered.ca:443?transport=tcp","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"}]
+        # },
         # out_recorder_factory=out_recorder_factory
     )
     # def out_recorder_factory() -> MediaRecorder:
