@@ -17,3 +17,5 @@
 numpy
 opencv-python-headless
 av
+streamlit_webrtc
+streamlit_option_menu
