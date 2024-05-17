@@ -20,3 +20,7 @@ av
 streamlit_webrtc
 streamlit_option_menu
 ultralytics
+onnxruntime
+playsound
+gTTS
+SpeechRecognition
