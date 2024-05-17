@@ -24,3 +24,6 @@ onnxruntime
 playsound
 gTTS
 SpeechRecognition
+scikit-spatial
+scikit-learn
+argparse
