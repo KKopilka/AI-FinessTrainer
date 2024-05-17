@@ -18,7 +18,6 @@ class TaskCounter:
     def ResetState(self):
         self.incorrectState = False
     
-        
     def Reset(self):
         self.phase = 1
         self.count = 0

@@ -12,7 +12,6 @@ from ai_trainer.direction_counter import TaskCounter
 taskCounter = TaskCounter()
 
 def counts_calculate_biceps(kps: np.ndarray, correct: int):
-    # print(f"counts_calculate: {dirr} {count}")
     angle = get_angle(kps)
     per = np.interp(angle, (28, 165), (0, 100))
     taskCounter.Count(per, correct == 1)
@@ -88,11 +87,6 @@ def elbow_position_first(kps: np.ndarray, initial_left_elbow, initial_right_elbo
     # Проверяем, если значение координаты Y локтя стало больше начального значения
     left_elbow_moved_up = left_elbow[1] - acc_left_elbow[1] > 5
     right_elbow_moved_up = right_elbow[1] - acc_right_elbow[1] > 5
-    # print('not: ', not_right)
-    # print("right_elbow: ", right_elbow)
-    # print("left_elbow: ", left_elbow)
-    # print("initial_right_elbow: ", acc_right_elbow)
-    # print("initial_left_elbow: ", acc_left_elbow)
 
     left_elbow_accum.store(left_elbow)
     right_elbow_accum.store(right_elbow)
@@ -120,7 +114,6 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     left_wrist = kps[9]
     right_wrist = kps[10]
 
-    # Условие для проверки положения рук: руки должны быть вдоль тела
     hands_down = (left_elbow[1] > left_wrist[1]) and (right_elbow[1] > right_wrist[1])
 
     ankles_width = dist([right_ankle], [left_ankle])[0][0]
@@ -128,12 +121,10 @@ def is_in_start_position(kps: np.ndarray) -> bool:
     margin = 0.7 * shoulders_width
     legs_correct = shoulders_width - margin < ankles_width < shoulders_width + margin
 
-    # legs_correct = True
-
     if hands_down and legs_correct and not initial_position_set:
         initial_left_elbow = left_elbow
         initial_right_elbow = right_elbow
-        initial_position_set = True  # Устанавливаем флаг, что начальная позиция сохранена
+        initial_position_set = True
         print(f"Initial positions set: Left Elbow: {initial_left_elbow}, Right Elbow: {initial_right_elbow}")
         return True
     elif initial_position_set:
