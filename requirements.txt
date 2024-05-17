@@ -1,13 +1,13 @@
 numpy
 opencv-python-headless
-# av
-# streamlit_webrtc
-# streamlit_option_menu
-# ultralytics
-# onnxruntime
-# playsound
-# gTTS
-# SpeechRecognition
-# scikit-spatial
-# scikit-learn
-# argparse
+av
+streamlit_webrtc
+streamlit_option_menu
+ultralytics
+onnxruntime
+playsound
+gTTS
+SpeechRecognition
+scikit-spatial
+scikit-learn
+argparse
