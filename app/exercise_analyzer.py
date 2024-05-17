@@ -1,4 +1,4 @@
-# import cv2
+import cv2
 from ultralytics import YOLO
 import numpy as np
 from ai_trainer.feedback.front_squat import give_feedback_front_squat, counts_calculate_front_squat
