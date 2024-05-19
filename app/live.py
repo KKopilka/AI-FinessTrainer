@@ -5,6 +5,7 @@ from streamlit_webrtc import VideoHTMLAttributes, webrtc_streamer, WebRtcMode
 from streamlit_option_menu import option_menu
 import sys
 st.set_page_config(page_title="AI-FitnessTrainer", page_icon=":basketball:", layout="wide")
+# sys.path.append('/AI-Trainer')
 sys.path.append('/mount/src/ai-finesstrainer')
 from exercise_analyzer import ExerciseAnalyzer
 from constants import _TEXT_BICEPS, _TEXT_PUSH_UP, _TEXT_REVERSE_PUSH_UP, _TEXT_SQUAT, _MAIN_PAGE_TEXT
@@ -107,15 +108,16 @@ else:
         except BaseException as b:
             print(b)
         return av.VideoFrame.from_ndarray(frame, format="rgb24")
+    
 
     ctx = webrtc_streamer(
         key="example",
         video_frame_callback=video_frame_callback,
         media_stream_constraints={"video": {"width": {'min':480, 'ideal':480}}, "audio": False},
         video_html_attrs=VideoHTMLAttributes(autoPlay=True, controls=False, muted=False, width=1000),
-        async_processing=True,
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]} # Add this config
+        # async_processing=False,
+        # mode=WebRtcMode.SENDRECV,
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}, # Add this config
 
         # rtc_configuration={
         #     "iceServers":[{"urls":"stun:stun.relay.metered.ca:80"},{"urls":"turn:global.relay.metered.ca:80","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turn:global.relay.metered.ca:80?transport=tcp","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turn:global.relay.metered.ca:443","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"},{"urls":"turns:global.relay.metered.ca:443?transport=tcp","username":"17b035d98b7a6bcf28caefab","credential":"Ec5e5cbaXV47wrun"}]

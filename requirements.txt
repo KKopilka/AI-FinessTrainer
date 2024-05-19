@@ -1,6 +1,7 @@
 numpy
 opencv-python-headless
 av
+streamlit==1.32.0
 streamlit_webrtc
 streamlit_option_menu
 ultralytics
