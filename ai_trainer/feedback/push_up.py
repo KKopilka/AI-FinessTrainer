@@ -94,7 +94,6 @@ def give_feedback_push_up(kps: np.ndarray) -> Tuple[Dict, List]:
     feedback = {'is_in_position': False}
     feedback_flag = False
     possible_corrections = ['wrist_bad', 'start_position']
-    # if is_in_start_position1(kps):
     if is_in_start_position(kps):
         feedback['is_in_position'] = True
         if wrists_wider_than_shoulders(kps):
@@ -105,8 +104,6 @@ def give_feedback_push_up(kps: np.ndarray) -> Tuple[Dict, List]:
     # else:
     #     feedback['is_in_position'] = False
     #     feedback['start_position'] = "Get into the starting position!!!"
-          
-        
-                
+                       
     pointsofinterest = []         
     return (feedback, possible_corrections, pointsofinterest, feedback_flag)

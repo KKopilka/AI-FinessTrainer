@@ -24,7 +24,7 @@ def counts_calculate_front_squat(kps: np.ndarray, correct: int):
 
     return [taskCounter.correctCount, taskCounter.ErrorAmount()]
 
-def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray)->float:
+def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray) -> float:
     """Calculate the anle between the vertical and the humerus.
     
     The humerus is defined as the line between the shoulder and the elbow joints

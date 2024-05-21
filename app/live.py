@@ -5,8 +5,8 @@ from streamlit_webrtc import VideoHTMLAttributes, webrtc_streamer, WebRtcMode
 from streamlit_option_menu import option_menu
 import sys
 st.set_page_config(page_title="AI-FitnessTrainer", page_icon=":basketball:", layout="wide")
-# sys.path.append('/AI-Trainer')
-sys.path.append('/mount/src/ai-finesstrainer')
+sys.path.append('/AI-Trainer')
+# sys.path.append('/mount/src/ai-finesstrainer')
 from exercise_analyzer import ExerciseAnalyzer
 from constants import _TEXT_BICEPS, _TEXT_PUSH_UP, _TEXT_REVERSE_PUSH_UP, _TEXT_SQUAT, _MAIN_PAGE_TEXT
 

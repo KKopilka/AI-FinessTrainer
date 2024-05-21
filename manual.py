@@ -111,9 +111,6 @@ def main():
 
             score_table(frame, correctCount)
             score_table_2(frame, incorrectCount)
-            # count_correct_attempts, dirr = counts_calculate(pose_3d, count_correct_attempts, dirr)
-            # # count, dirr = counts_calculate(pose_3d, count, dirr)
-            # score_table(frame, count)
             
             # Разбираем пришедшие точки интереса
             for poi in pointsofinterest:

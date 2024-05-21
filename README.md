@@ -42,9 +42,9 @@ streamlit run app/live.py
 
 - [x] Run locally or through a browser (streamlit).
 
-- [ ] Convert the project to an .exe file.
-
 - [x] Launching via Docker.
+
+- [ ] Convert the project to an .exe file.
 
 
 ## Some ideas 📝
@@ -54,3 +54,4 @@ Here are some ideas on how to improve this project are as follows:
 - Add more exercises.
 - Add more statistics to the program.
 - Add a web/mobile app.
+- Add sound accompaniment.

@@ -77,10 +77,8 @@ def elbow_inclination(shoulder: np.ndarray, elbow: np.ndarray) -> float:
 def hip_position(kps: np.ndarray) -> bool:
     right_hip = kps[12]
     right_shoulder = kps[6]
-    right_wrist = kps[10]
 
     left_hip = kps[11]
-    left_wrist = kps[9]
     left_shoulder = kps[5]
 
     right_knee = kps[14]
@@ -97,14 +95,11 @@ def hip_position(kps: np.ndarray) -> bool:
 def is_in_start_position(kps: np.ndarray) -> bool:
     right_hip = kps[12]
     right_shoulder = kps[6]
-    right_wrist = kps[10]
 
     left_hip = kps[11]
-    left_wrist = kps[9]
     left_shoulder = kps[5]
 
     right_knee = kps[14]
-    right_ankle = kps[16]
 
     angle_right = elbow_inclination(right_shoulder, right_hip)
     angle_left = elbow_inclination(left_shoulder, left_hip)
