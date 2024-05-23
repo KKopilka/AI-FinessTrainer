@@ -10,7 +10,7 @@ ErrorAmount() returns the number of unsuccessful approaches.
 """
 class TaskCounter:
     def __init__(self) -> None:
-        self.phase = 1
+        self.phase = 0
         self.count = 0
         self.correctCount = 0
         self.incorrectState = False
@@ -19,7 +19,7 @@ class TaskCounter:
         self.incorrectState = False
     
     def Reset(self):
-        self.phase = 1
+        self.phase = 0
         self.count = 0
         self.correctCount = 0
         self.ResetState()

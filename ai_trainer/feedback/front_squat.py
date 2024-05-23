@@ -19,7 +19,9 @@ taskCounter = TaskCounter()
 def counts_calculate_front_squat(kps: np.ndarray, correct: int):
     print(f"counts_calculate: {correct}")
     angle = get_angle(kps)
-    per = np.interp(angle, (85, 160), (0, 100))
+    per = np.interp(angle, (170, 85), (0, 100))
+
+    # per = np.interp(angle, (85, 170), (0, 100))
     taskCounter.Count(per, correct == 1)
 
     return [taskCounter.correctCount, taskCounter.ErrorAmount()]

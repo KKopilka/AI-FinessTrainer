@@ -13,7 +13,7 @@ taskCounter = TaskCounter()
 
 def counts_calculate_biceps(kps: np.ndarray, correct: int):
     angle = get_angle(kps)
-    per = np.interp(angle, (28, 165), (0, 100))
+    per = np.interp(angle, (40, 165), (0, 100))
     taskCounter.Count(per, correct == 1)
 
     return [taskCounter.correctCount, taskCounter.ErrorAmount()]
@@ -48,7 +48,7 @@ def get_angle(kps: np.ndarray) -> float:
     right_hand = estimate_pose_angle(right_shoulder, right_elbow, right_wrist)
     left_hand = estimate_pose_angle(left_shoulder, left_elbow, left_wrist)
     avg_angle = (right_hand + left_hand) / 2
-    # print("angle: ", avg_angle)
+    print("angle: ", avg_angle)
     return avg_angle
 
 def are_feet_well_positioned(kps: np.ndarray) -> bool:

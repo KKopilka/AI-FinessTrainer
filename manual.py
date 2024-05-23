@@ -46,6 +46,7 @@ def main():
     video_path = 'assets/left_side_cut.mp4'
     # video_path = 'assets/reverse_push_up.mp4'
     # video_path = 'assets/push_up2.mp4'
+    # video_path = 'assets/biceps.mp4'
     cap = cv2.VideoCapture(video_path)
     count = 0
     dirr = 1
