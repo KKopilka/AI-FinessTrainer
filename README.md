@@ -12,6 +12,20 @@ This repository provides a set of tools to help you improve your technique for t
 
 A counter for correctly completed sets and so-called attempts to perform the exercise correctly has also been added. This will help you better understand your exercise statistics.
 
+## About the pose estimation model and the dataset used ⚙️
+
+This project uses a trained YOLOv8m-pose model. However, you can use the weights of 2 other trained models: YOLOv8n-pose and YOLOv8s-pose located in the ```models/yolo``` and ```models/yolo2``` folders respectively, but these results are worse than YOLOv8m-pose.
+
+These models are pose detection models that are trained on COCO-pose typed data. This dataset includes 17 keypoints. For clarity, below is a markup image.
+
+<p align="center">
+<img src="docs/coco-pose.jpg"
+    alt="coco-pose"
+    width=550 />
+</p>
+
+More information on the dataset can be found here: [COCO-Human-Pose](https://github.com/robertklee/COCO-Human-Pose/blob/main/README.md) and [Ultralytics: COCO-Pose Dataset](https://docs.ultralytics.com/datasets/pose/coco/).
+
 ## How to use ✔️
 1. Clone repository.
 ```
@@ -29,6 +43,13 @@ python manual.py <exercise_name>
 ```
 streamlit run app/live.py 
 ```
+5. If you want to run the project through docker. Documentation 👉 [Deploy Streamlit using Docker](https://docs.streamlit.io/deploy/tutorials/docker).
+```
+docker build -t streamlit .
+```
+```
+docker-compose up -d
+```
 
 ## Project roadmap 📝
 
@@ -44,9 +65,6 @@ streamlit run app/live.py
 
 - [x] Launching via Docker.
 
-- [ ] Convert the project to an .exe file.
-
-
 ## Some ideas 📝
 This project is not a fully finished version, so it can still be finalized.
 
@@ -55,3 +73,4 @@ Here are some ideas on how to improve this project are as follows:
 - Add more statistics to the program.
 - Add a web/mobile app.
 - Add sound accompaniment.
+- Convert the project to an .exe file.
